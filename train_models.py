@@ -14,7 +14,7 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from sklearn.linear_model import Ridge, Lasso, ElasticNet
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
@@ -116,6 +116,12 @@ class PlayerModelTrainer:
         models['GradientBoosting'] = GradientBoostingRegressor(
             n_estimators=100,
             max_depth=5,
+            learning_rate=0.1,
+            random_state=42
+        )
+        
+        models['AdaBoost'] = AdaBoostRegressor(
+            n_estimators=100,
             learning_rate=0.1,
             random_state=42
         )
