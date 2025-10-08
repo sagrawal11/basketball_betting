@@ -95,11 +95,10 @@ class NBAFeatureEngineering:
         if not nba_file.exists():
             return None
         
-        # Check if features already exist (skip only if we have archetype-enhanced features)
-        # We'll regenerate all features since we're adding archetype features
-        # if features_file.exists() and save_to_file:
-        #     print(f"⏭️  {player_name}: Features already exist, skipping...")
-        #     return None
+        # Check if features already exist (checkpointing enabled)
+        if features_file.exists() and save_to_file:
+            # Skip if features already exist (allows resuming)
+            return None
         
         df = pd.read_csv(nba_file)
         
