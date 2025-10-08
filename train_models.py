@@ -47,7 +47,7 @@ except:
 class PlayerModelTrainer:
     """Train prediction models for a single player"""
     
-    def __init__(self, data_dir: str = "data2"):
+    def __init__(self, data_dir: str = "player_data"):
         self.data_dir = data_dir
         
         # Target variables to predict

@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore')
 class PlayerArchetyping:
     """Create comprehensive archetypes for NBA players"""
     
-    def __init__(self, data_dir: str = "data2"):
+    def __init__(self, data_dir: str = "player_data"):
         self.data_dir = data_dir
         
         # Archetype dimensions and thresholds

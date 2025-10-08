@@ -60,7 +60,7 @@ def fix_player_experience(player_dir: Path) -> bool:
         print(f"❌ Error fixing {player_name}: {e}")
         return False
 
-def fix_all_players(data_dir: str = "data2"):
+def fix_all_players(data_dir: str = "player_data"):
     """
     Fix season experience for all players
     

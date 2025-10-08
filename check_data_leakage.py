@@ -141,7 +141,7 @@ def check_categorical_encoding():
     print(f"\n🔍 Checking Categorical Encoding")
     print("=" * 70)
     
-    player_dir = Path('data2/Kevin_Durant')
+    player_dir = Path('player_data/Kevin_Durant')
     features_file = player_dir / "Kevin_Durant_features.csv"
     
     df = pd.read_csv(features_file)

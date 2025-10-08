@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore')
 class NBAPredictionEngine:
     """Generate predictions for NBA player performance"""
     
-    def __init__(self, data_dir: str = "data2"):
+    def __init__(self, data_dir: str = "player_data"):
         self.data_dir = data_dir
         
         # Target stats we can predict

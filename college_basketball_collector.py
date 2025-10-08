@@ -26,11 +26,11 @@ class CollegeBasketballCollector:
         Initialize the college basketball collector
         
         Args:
-            data_dir: Directory to store data (defaults to data2/college)
+            data_dir: Directory to store data (defaults to player_data/college)
         """
         if data_dir is None:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            self.data_dir = os.path.join(current_dir, 'data2', 'college')
+            self.data_dir = os.path.join(current_dir, 'player_data', 'college')
         else:
             self.data_dir = data_dir
         
@@ -494,7 +494,7 @@ class CollegeBasketballCollector:
         """Save individual player's college data to their directory"""
         try:
             # Create player directory path (same as NBA data structure)
-            # data_dir is data2/college, so we go up one level to get data2
+            # data_dir is player_data/college, so we go up one level to get player_data
             base_data_dir = os.path.dirname(self.data_dir)
             player_dir = os.path.join(base_data_dir, player_name.replace(' ', '_'))
             os.makedirs(player_dir, exist_ok=True)

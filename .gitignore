@@ -42,17 +42,20 @@ env/
 .ipynb_checkpoints
 
 # Data Files - Keep structure but ignore actual data
-data2/*
-!data2/.gitkeep
-data2/*/
-data2/**/*.csv
-data2/**/*.json
-data2/**/*.log
+player_data/*
+!player_data/.gitkeep
+player_data/*/
+player_data/**/*.csv
+player_data/**/*.json
+player_data/**/*.log
 
 # Keep college directory structure but ignore data
-!data2/college/
-data2/college/*.csv
-data2/college/*.json
+!player_data/college/
+player_data/college/*.csv
+player_data/college/*.json
+
+# Team stats directory
+team_stats/
 
 # NBA directory - fully ignored
 nba/

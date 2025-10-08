@@ -9,7 +9,7 @@ import os
 import pandas as pd
 from pathlib import Path
 
-def cleanup_college_only_players(data_dir: str = "data2"):
+def cleanup_college_only_players(data_dir: str = "player_data"):
     """
     Remove college data CSVs for players who don't have NBA data
     

@@ -38,7 +38,7 @@ class NBADataCollector:
         Initialize the data collector
         
         Args:
-            data_dir: Directory to store data (defaults to data2)
+            data_dir: Directory to store data (defaults to player_data)
             max_workers: Maximum number of concurrent workers
         """
         if not NBA_API_AVAILABLE:
@@ -47,11 +47,11 @@ class NBADataCollector:
         # Set up directories
         if data_dir is None:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            self.data_dir = os.path.join(current_dir, 'data2')
+            self.data_dir = os.path.join(current_dir, 'player_data')
         else:
             self.data_dir = data_dir
         
-        # Ensure data2 directory exists
+        # Ensure player_data directory exists
         os.makedirs(self.data_dir, exist_ok=True)
         
         # Paths

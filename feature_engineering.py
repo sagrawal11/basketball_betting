@@ -18,21 +18,34 @@ Creates comprehensive features for predicting:
 import pandas as pd
 import numpy as np
 import os
+import logging
 from pathlib import Path
 from sklearn.preprocessing import LabelEncoder
 import warnings
 warnings.filterwarnings('ignore')
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class NBAFeatureEngineering:
     """Create features for NBA player performance prediction"""
     
-    def __init__(self, data_dir: str = "data2", output_dir: str = "processed_data"):
+    def __init__(self, data_dir: str = "player_data", output_dir: str = "processed_data"):
         self.data_dir = data_dir
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
         
         # Label encoders for categorical variables
         self.encoders = {}
+        
+        # Load team stats once for all players (now in root directory)
+        team_stats_file = Path('team_stats') / 'all_team_stats.csv'
+        if team_stats_file.exists():
+            self.team_stats = pd.read_csv(team_stats_file)
+            logger.info(f"✅ Loaded {len(self.team_stats)} team-season records for feature engineering")
+        else:
+            self.team_stats = None
+            logger.warning("⚠️  Team stats not found - opponent strength features will be limited")
         
         # Target variables we want to predict
         self.target_variables = [
@@ -393,10 +406,55 @@ class NBAFeatureEngineering:
         return df
     
     def _create_opponent_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Create opponent-specific features"""
+        """Create opponent-specific features using team stats"""
         
+        # Add team-level stats if available
+        if self.team_stats is not None and 'OPPONENT_TEAM' in df.columns and 'SEASON' in df.columns:
+            # Merge opponent team's defensive rating
+            opp_team_stats = self.team_stats[['SEASON', 'TEAM_ABBREVIATION', 'DEF_RATING', 'OFF_RATING', 'PACE', 'NET_RATING', 'W_PCT']].copy()
+            opp_team_stats = opp_team_stats.rename(columns={
+                'TEAM_ABBREVIATION': 'OPPONENT_TEAM',
+                'DEF_RATING': 'OPP_DEF_RATING',
+                'OFF_RATING': 'OPP_OFF_RATING',
+                'PACE': 'OPP_PACE',
+                'NET_RATING': 'OPP_NET_RATING',
+                'W_PCT': 'OPP_WIN_PCT'
+            })
+            
+            df = df.merge(opp_team_stats, on=['OPPONENT_TEAM', 'SEASON'], how='left')
+            
+            # Merge player's own team stats
+            player_team_stats = self.team_stats[['SEASON', 'TEAM_ABBREVIATION', 'DEF_RATING', 'OFF_RATING', 'PACE', 'NET_RATING', 'W_PCT']].copy()
+            player_team_stats = player_team_stats.rename(columns={
+                'TEAM_ABBREVIATION': 'PLAYER_TEAM',
+                'DEF_RATING': 'TEAM_DEF_RATING',
+                'OFF_RATING': 'TEAM_OFF_RATING',
+                'PACE': 'TEAM_PACE',
+                'NET_RATING': 'TEAM_NET_RATING',
+                'W_PCT': 'TEAM_WIN_PCT'
+            })
+            
+            df = df.merge(player_team_stats, on=['PLAYER_TEAM', 'SEASON'], how='left')
+            
+            # Create interaction features
+            # 1. Playing vs strong defense hurts scoring
+            if 'OPP_DEF_RATING' in df.columns:
+                df['VS_STRONG_DEFENSE'] = (df['OPP_DEF_RATING'] < 105).astype(int)  # Good defense = rating < 105
+                df['DEF_RATING_IMPACT'] = 115 - df['OPP_DEF_RATING']  # Higher = easier to score
+            
+            # 2. Pace affects total possessions (more possessions = more stats)
+            if 'TEAM_PACE' in df.columns and 'OPP_PACE' in df.columns:
+                df['GAME_PACE_EST'] = (df['TEAM_PACE'] + df['OPP_PACE']) / 2
+                df['IS_FAST_PACED'] = (df['GAME_PACE_EST'] > 100).astype(int)
+            
+            # 3. Team quality differential
+            if 'TEAM_NET_RATING' in df.columns and 'OPP_NET_RATING' in df.columns:
+                df['TEAM_QUALITY_DIFF'] = df['TEAM_NET_RATING'] - df['OPP_NET_RATING']
+                df['IS_UNDERDOG'] = (df['TEAM_QUALITY_DIFF'] < -5).astype(int)
+                df['IS_FAVORITE'] = (df['TEAM_QUALITY_DIFF'] > 5).astype(int)
+        
+        # Historical performance vs opponent (player-specific)
         if 'OPPONENT_STRENGTH' not in df.columns:
-            # Create opponent strength based on historical performance against them
             if 'OPPONENT' in df.columns:
                 opponent_stats = df.groupby('OPPONENT')[self.target_variables].mean()
                 
