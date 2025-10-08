@@ -57,12 +57,12 @@ class NBAFeatureEngineering:
             'PLAYER_NAME', 'MATCHUP', 'OPPONENT', 'PLAYER_TEAM', 'OPPONENT_TEAM',
             
             # Categorical variables (use encoded versions instead)
-            'SEASON', 'WL', 'GAME_RESULT', 'REST_FACTOR',
+            'SEASON', 'WL', 'GAME_RESULT', 'REST_FACTOR', 'height', 'position',
             
             # Non-numeric or unreliable
             'VIDEO_AVAILABLE', 'GAME_QUARTER',
             
-            # Archetype categorical columns (use encoded versions)
+            # Archetype categorical columns (ALL will be dropped, only encoded versions kept)
             'ARCHETYPE_PRIMARY_ROLE', 'ARCHETYPE_SHOOTING_STYLE', 
             'ARCHETYPE_PLAYMAKING', 'ARCHETYPE_REBOUNDING',
             'ARCHETYPE_DEFENSE', 'ARCHETYPE_EFFICIENCY',
@@ -106,6 +106,26 @@ class NBAFeatureEngineering:
         # Clean data - replace empty strings with NaN
         df = df.replace('', np.nan)
         df = df.replace(' ', np.nan)
+        
+        # Encode categorical columns from raw data
+        if 'WL' in df.columns:
+            df['WIN'] = (df['WL'] == 'W').astype(int)
+            df = df.drop('WL', axis=1)
+        
+        if 'height' in df.columns:
+            # Convert height to inches (e.g., "6-7" -> 79)
+            df['height_inches'] = df['height'].apply(lambda x: self._height_to_inches(x) if pd.notna(x) else np.nan)
+            df = df.drop('height', axis=1)
+        
+        if 'position' in df.columns:
+            df['position_encoded'] = pd.Categorical(df['position']).codes
+            df = df.drop('position', axis=1)
+        
+        if 'REST_FACTOR' in df.columns:
+            # Encode rest factor
+            rest_mapping = {'No Rest': 0, '1 Day': 1, '2+ Days': 2, 'Unknown': -1}
+            df['REST_ENCODED'] = df['REST_FACTOR'].map(rest_mapping).fillna(-1).astype(int)
+            df = df.drop('REST_FACTOR', axis=1)
         
         # Convert date column
         df['GAME_DATE'] = pd.to_datetime(df['GAME_DATE'])
@@ -158,6 +178,16 @@ class NBAFeatureEngineering:
         
         return df
     
+    def _height_to_inches(self, height_str):
+        """Convert height string like '6-7' to inches"""
+        try:
+            if isinstance(height_str, str) and '-' in height_str:
+                feet, inches = height_str.split('-')
+                return int(feet) * 12 + int(inches)
+        except:
+            pass
+        return np.nan
+    
     def _add_college_features(self, df: pd.DataFrame, college_df: pd.DataFrame) -> pd.DataFrame:
         """Add college statistics as features"""
         if len(college_df) > 0:
@@ -195,7 +225,7 @@ class NBAFeatureEngineering:
             df = df.merge(archetype_df[archetype_cols], on='GAME_DATE_MERGE', how='left', suffixes=('', '_ARCH'))
             df = df.drop('GAME_DATE_MERGE', axis=1)
             
-            # Encode ALL categorical archetypes (don't skip any)
+            # Encode ALL categorical archetypes
             archetype_categorical = [col for col in df.columns if col.startswith('ARCHETYPE_')]
             
             for col in archetype_categorical:
@@ -209,6 +239,13 @@ class NBAFeatureEngineering:
                         # Create binary columns for each archetype value
                         dummies = pd.get_dummies(df[col], prefix=col, drop_first=True)
                         df = pd.concat([df, dummies], axis=1)
+                    
+                    # DROP the original categorical column to save space
+                    df = df.drop(col, axis=1)
+            
+            # Drop COMPOSITE_ARCHETYPE (it's too complex to encode meaningfully)
+            if 'COMPOSITE_ARCHETYPE' in df.columns:
+                df = df.drop('COMPOSITE_ARCHETYPE', axis=1)
         
         return df
     
@@ -234,11 +271,7 @@ class NBAFeatureEngineering:
         if 'TS_PCT' not in df.columns:
             df['TS_PCT'] = df['PTS'] / (2 * (df['FGA'] + 0.44 * df['FTA'])).replace(0, np.nan)
         
-        # Assist-to-turnover ratio
-        df['AST_TO_RATIO'] = df['AST'] / df['TOV'].replace(0, np.nan)
-        
-        # Points per field goal attempt
-        df['PTS_PER_FGA'] = df['PTS'] / df['FGA'].replace(0, np.nan)
+        # Assist-to-turnover ratio - will be calculated after rolling features
         
         # Rebound rate (per minute)
         df['REB_PER_MIN'] = df['REB'] / df['MIN'].replace(0, np.nan)
@@ -246,15 +279,7 @@ class NBAFeatureEngineering:
         # Stock (Steals + Blocks)
         df['STOCK'] = df['STL'] + df['BLK']
         
-        # Fantasy points (common fantasy scoring)
-        df['FANTASY_PTS'] = (
-            df['PTS'] + 
-            1.2 * df['REB'] + 
-            1.5 * df['AST'] + 
-            3 * df['STL'] + 
-            3 * df['BLK'] - 
-            df['TOV']
-        )
+        # Fantasy points - will be calculated after rolling features
         
         return df
     
@@ -266,14 +291,18 @@ class NBAFeatureEngineering:
         for window in windows:
             for stat in self.target_variables:
                 if stat in df.columns:
-                    # Rolling mean
-                    df[f'{stat}_L{window}_AVG'] = df[stat].rolling(window=window, min_periods=1).mean()
+                    # CRITICAL FIX: Shift by 1 to exclude current game from rolling average
+                    # This prevents data leakage - we can't use current game to predict current game!
+                    stat_shifted = df[stat].shift(1)
+                    
+                    # Rolling mean (of PREVIOUS games only)
+                    df[f'{stat}_L{window}_AVG'] = stat_shifted.rolling(window=window, min_periods=1).mean()
                     
                     # Rolling std (consistency)
-                    df[f'{stat}_L{window}_STD'] = df[stat].rolling(window=window, min_periods=1).std()
+                    df[f'{stat}_L{window}_STD'] = stat_shifted.rolling(window=window, min_periods=1).std()
                     
                     # Rolling max
-                    df[f'{stat}_L{window}_MAX'] = df[stat].rolling(window=window, min_periods=1).max()
+                    df[f'{stat}_L{window}_MAX'] = stat_shifted.rolling(window=window, min_periods=1).max()
                     
                     # Trend (difference from rolling average)
                     df[f'{stat}_TREND_L{window}'] = df[stat] - df[f'{stat}_L{window}_AVG']
@@ -282,6 +311,27 @@ class NBAFeatureEngineering:
         for stat in self.target_variables:
             if stat in df.columns:
                 df[f'{stat}_RECENT_VS_SEASON'] = df[f'{stat}_L5_AVG'] / df[f'{stat}_L20_AVG'].replace(0, np.nan)
+        
+        # NOW create derived features using rolling averages (no leakage)
+        # Assist-to-turnover ratio from rolling averages
+        if 'AST_L5_AVG' in df.columns and 'TOV_L5_AVG' in df.columns:
+            df['AST_TO_RATIO'] = df['AST_L5_AVG'] / df['TOV_L5_AVG'].replace(0, np.nan)
+        
+        # Points per FGA from rolling average
+        if 'PTS_L5_AVG' in df.columns and 'FGA' in df.columns:
+            df['PTS_PER_FGA'] = df['PTS_L5_AVG'] / pd.to_numeric(df['FGA'], errors='coerce').replace(0, np.nan)
+        
+        # Fantasy points from rolling averages
+        if all(f'{stat}_L5_AVG' in df.columns for stat in ['PTS', 'AST', 'STL', 'BLK', 'TOV']):
+            if 'OREB_L5_AVG' in df.columns and 'DREB_L5_AVG' in df.columns:
+                df['FANTASY_PTS'] = (
+                    df['PTS_L5_AVG'] + 
+                    1.2 * (df['OREB_L5_AVG'] + df['DREB_L5_AVG']) + 
+                    1.5 * df['AST_L5_AVG'] + 
+                    3 * df['STL_L5_AVG'] + 
+                    3 * df['BLK_L5_AVG'] - 
+                    df['TOV_L5_AVG']
+                )
         
         return df
     
@@ -304,15 +354,7 @@ class NBAFeatureEngineering:
                     lambda x: self.encoders['OPPONENT'].transform([x])[0] if x in known_opponents else -1
                 )
         
-        # 3. Rest factor encoding
-        if 'REST_FACTOR' in df.columns:
-            rest_mapping = {
-                'No Rest': 0,
-                '1 Day': 1,
-                '2+ Days': 2,
-                'Unknown': -1
-            }
-            df['REST_ENCODED'] = df['REST_FACTOR'].map(rest_mapping).fillna(-1).astype(int)
+        # 3. Rest factor encoding (already done at data loading, skip here)
         
         # 4. Day of week encoding (already encoded in GAME_DAY_OF_WEEK)
         
@@ -396,11 +438,12 @@ class NBAFeatureEngineering:
         # Career game number
         df['CAREER_GAME_NUM'] = range(1, len(df) + 1)
         
-        # Career averages (expanding window)
+        # Career averages (expanding window) - EXCLUDE current game
         for stat in self.target_variables:
             if stat in df.columns:
-                df[f'{stat}_CAREER_AVG'] = df[stat].expanding().mean()
-                df[f'{stat}_CAREER_STD'] = df[stat].expanding().std()
+                stat_shifted = df[stat].shift(1)
+                df[f'{stat}_CAREER_AVG'] = stat_shifted.expanding().mean()
+                df[f'{stat}_CAREER_STD'] = stat_shifted.expanding().std()
         
         # Experience level
         df['YEARS_EXPERIENCE'] = (df['CAREER_GAME_NUM'] / 82).astype(int)
