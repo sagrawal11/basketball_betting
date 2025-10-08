@@ -42,7 +42,13 @@ class NBAFeatureEngineering:
         team_stats_file = Path('team_stats') / 'all_team_stats.csv'
         if team_stats_file.exists():
             self.team_stats = pd.read_csv(team_stats_file)
-            logger.info(f"✅ Loaded {len(self.team_stats)} team-season records for feature engineering")
+            
+            # CRITICAL: Deduplicate team stats to prevent cartesian product on merge
+            # Keep only one row per (TEAM_ABBREVIATION, SEASON) combination
+            original_len = len(self.team_stats)
+            self.team_stats = self.team_stats.drop_duplicates(subset=['TEAM_ABBREVIATION', 'SEASON'], keep='first')
+            
+            logger.info(f"✅ Loaded {len(self.team_stats)} unique team-season records (removed {original_len - len(self.team_stats)} duplicates)")
         else:
             self.team_stats = None
             logger.warning("⚠️  Team stats not found - opponent strength features will be limited")
