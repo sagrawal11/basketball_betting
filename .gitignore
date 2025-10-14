@@ -41,21 +41,28 @@ env/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Data Files - Keep structure but ignore actual data
-player_data/*
-!player_data/.gitkeep
-player_data/*/
-player_data/**/*.csv
-player_data/**/*.json
-player_data/**/*.log
+# Backend Data Files - Keep structure but ignore actual data
+backend/data/player_data/**/*.csv
+backend/data/player_data/**/*.json
+backend/data/player_data/**/*.log
+backend/data/player_data/**/models/
+backend/data/team_stats/*.csv
 
-# Keep college directory structure but ignore data
-!player_data/college/
-player_data/college/*.csv
-player_data/college/*.json
+# Processed data
+backend/data/processed_data/
 
-# Team stats directory
-team_stats/
+# Model files (too large for git)
+*.pkl
+*.h5
+*.pt
+*.pth
+backend/models/**/*.pkl
+
+# Training outputs
+catboost_info/
+backend/outputs/*.png
+backend/outputs/*.csv
+backend/outputs/*.txt
 
 # NBA directory - fully ignored
 nba/
@@ -93,18 +100,13 @@ htmlcov/
 ehthumbs.db
 Thumbs.db
 
-# Project specific
+# Project specific - temporary/generated files
 checkpoint*.json
 *_checkpoint.json
-retry_*.py
-explore_*.py
-enhanced_*.py
-optimized_*.py
+training_log.txt
+nohup.out
 
-# Keep important files
-!nba_data_collection.py
-!college_basketball_collector.py
-!cleanup_college_only_players.py
-!requirements.txt
-!README.md
+# Analysis outputs (generated, not source)
+rebounding_analysis.png
+all_model_metrics.csv
 

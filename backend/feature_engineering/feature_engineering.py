@@ -189,6 +189,37 @@ class NBAFeatureEngineering:
         # Add player identifier
         df['PLAYER_NAME'] = player_name
         
+        # CRITICAL: Remove leakage columns (but KEEP target variables for training)
+        # We need targets in the CSV to train on, but we remove derived leakage features
+        columns_to_remove = [
+            # Total rebounds (REB = OREB + DREB, causes leakage when predicting OREB/DREB)
+            'REB', 'REB_LAST_3_AVG', 'REB_LAST_5_AVG', 'REB_LAST_10_AVG', 
+            'REB_L3_AVG', 'REB_L5_AVG', 'REB_L10_AVG', 'REB_L20_AVG',
+            'REB_L3_STD', 'REB_L5_STD', 'REB_L10_STD', 'REB_L20_STD',
+            'REB_L3_MAX', 'REB_L5_MAX', 'REB_L10_MAX', 'REB_L20_MAX',
+            'REB_TREND_L3', 'REB_TREND_L5', 'REB_TREND_L10', 'REB_TREND_L20',
+            'REB_CONSISTENCY', 'REB_PER_MIN', 'REB_CAREER_AVG', 'REB_CAREER_STD',
+            'REB_RECENT_VS_SEASON',
+            
+            # Plus-minus from current game (heavily correlated with all stats)
+            'PLUS_MINUS',
+            
+            # Current game minutes (strong indicator of all stats in that game)
+            'MIN',
+            
+            # Shooting percentages from current game (derived from makes/attempts)
+            'FG_PCT', 'FG3_PCT', 'FT_PCT',
+            
+            # Attempts from current game (when predicting makes)
+            'FGA', 'FG3A', 'FTA',
+            
+            # Useless columns
+            'VIDEO_AVAILABLE'
+        ]
+        
+        # Remove leakage columns (KEEP target variables!)
+        df = df.drop(columns=[c for c in columns_to_remove if c in df.columns], errors='ignore')
+        
         # Save to player's directory if requested
         if save_to_file:
             df.to_csv(features_file, index=False)
@@ -322,8 +353,9 @@ class NBAFeatureEngineering:
                     # Rolling max
                     df[f'{stat}_L{window}_MAX'] = stat_shifted.rolling(window=window, min_periods=1).max()
                     
-                    # Trend (difference from rolling average)
-                    df[f'{stat}_TREND_L{window}'] = df[stat] - df[f'{stat}_L{window}_AVG']
+                    # Trend (change in rolling average, NOT difference from current game)
+                    # Use shift to compare current rolling avg to previous rolling avg
+                    df[f'{stat}_TREND_L{window}'] = df[f'{stat}_L{window}_AVG'] - df[f'{stat}_L{window}_AVG'].shift(1)
         
         # Recent vs long-term form comparison
         for stat in self.target_variables:
@@ -416,48 +448,213 @@ class NBAFeatureEngineering:
         
         # Add team-level stats if available
         if self.team_stats is not None and 'OPPONENT_TEAM' in df.columns and 'SEASON' in df.columns:
-            # Merge opponent team's defensive rating
-            opp_team_stats = self.team_stats[['SEASON', 'TEAM_ABBREVIATION', 'DEF_RATING', 'OFF_RATING', 'PACE', 'NET_RATING', 'W_PCT']].copy()
+            # Prepare opponent team stats with ALL available data
+            opp_cols = ['SEASON', 'TEAM_ABBREVIATION', 'DEF_RATING', 'OFF_RATING', 'PACE', 'NET_RATING', 'W_PCT']
+            
+            # Add rebounding columns if available
+            if 'OREB' in self.team_stats.columns:
+                opp_cols.extend(['OREB', 'DREB', 'REB', 'OREB_PCT', 'DREB_PCT'])
+            
+            # Add shot volume
+            if 'FGA' in self.team_stats.columns:
+                opp_cols.extend(['FGA', 'FG3A', 'FG_PCT', 'FG3_PCT'])
+            
+            # Add ALL counting stats for better predictions
+            if 'AST' in self.team_stats.columns:
+                opp_cols.extend(['AST', 'TOV', 'STL', 'BLK', 'PTS'])
+            
+            # Add free throw data
+            if 'FTA' in self.team_stats.columns:
+                opp_cols.append('FTA')
+            
+            # Filter to available columns
+            opp_cols = [col for col in opp_cols if col in self.team_stats.columns]
+            
+            opp_team_stats = self.team_stats[opp_cols].copy()
             opp_team_stats = opp_team_stats.rename(columns={
                 'TEAM_ABBREVIATION': 'OPPONENT_TEAM',
                 'DEF_RATING': 'OPP_DEF_RATING',
                 'OFF_RATING': 'OPP_OFF_RATING',
                 'PACE': 'OPP_PACE',
                 'NET_RATING': 'OPP_NET_RATING',
-                'W_PCT': 'OPP_WIN_PCT'
+                'W_PCT': 'OPP_WIN_PCT',
+                # Rebounding
+                'OREB': 'OPP_OREB',
+                'DREB': 'OPP_DREB',
+                'REB': 'OPP_REB',
+                'OREB_PCT': 'OPP_OREB_PCT',
+                'DREB_PCT': 'OPP_DREB_PCT',
+                # Shooting
+                'FGA': 'OPP_FGA',
+                'FG3A': 'OPP_FG3A',
+                'FG_PCT': 'OPP_FG_PCT',
+                'FG3_PCT': 'OPP_FG3_PCT',
+                'FTA': 'OPP_FTA',
+                # Counting stats (how they perform, tells us about matchups)
+                'AST': 'OPP_AST',
+                'TOV': 'OPP_TOV',  # Teams with high TOV = more steal opportunities for us
+                'STL': 'OPP_STL',  # Teams with high STL = more pressure on our turnovers
+                'BLK': 'OPP_BLK',  # Teams with high BLK = harder to score inside
+                'PTS': 'OPP_PTS'
             })
             
             df = df.merge(opp_team_stats, on=['OPPONENT_TEAM', 'SEASON'], how='left')
             
-            # Merge player's own team stats
-            player_team_stats = self.team_stats[['SEASON', 'TEAM_ABBREVIATION', 'DEF_RATING', 'OFF_RATING', 'PACE', 'NET_RATING', 'W_PCT']].copy()
+            # Merge player's own team stats with ALL data
+            player_cols = ['SEASON', 'TEAM_ABBREVIATION', 'DEF_RATING', 'OFF_RATING', 'PACE', 'NET_RATING', 'W_PCT']
+            
+            if 'OREB' in self.team_stats.columns:
+                player_cols.extend(['OREB', 'DREB', 'REB', 'OREB_PCT', 'DREB_PCT'])
+            
+            if 'FGA' in self.team_stats.columns:
+                player_cols.extend(['FGA', 'FG3A', 'FG_PCT', 'FG3_PCT'])
+            
+            if 'AST' in self.team_stats.columns:
+                player_cols.extend(['AST', 'TOV', 'STL', 'BLK', 'PTS'])
+            
+            if 'FTA' in self.team_stats.columns:
+                player_cols.append('FTA')
+            
+            player_cols = [col for col in player_cols if col in self.team_stats.columns]
+            
+            player_team_stats = self.team_stats[player_cols].copy()
             player_team_stats = player_team_stats.rename(columns={
                 'TEAM_ABBREVIATION': 'PLAYER_TEAM',
                 'DEF_RATING': 'TEAM_DEF_RATING',
                 'OFF_RATING': 'TEAM_OFF_RATING',
                 'PACE': 'TEAM_PACE',
                 'NET_RATING': 'TEAM_NET_RATING',
-                'W_PCT': 'TEAM_WIN_PCT'
+                'W_PCT': 'TEAM_WIN_PCT',
+                # Rebounding
+                'OREB': 'TEAM_OREB',
+                'DREB': 'TEAM_DREB',
+                'REB': 'TEAM_REB',
+                'OREB_PCT': 'TEAM_OREB_PCT',
+                'DREB_PCT': 'TEAM_DREB_PCT',
+                # Shooting
+                'FGA': 'TEAM_FGA',
+                'FG3A': 'TEAM_FG3A',
+                'FG_PCT': 'TEAM_FG_PCT',
+                'FG3_PCT': 'TEAM_FG3_PCT',
+                'FTA': 'TEAM_FTA',
+                # Counting stats (context for player's role)
+                'AST': 'TEAM_AST',
+                'TOV': 'TEAM_TOV',
+                'STL': 'TEAM_STL',
+                'BLK': 'TEAM_BLK',
+                'PTS': 'TEAM_PTS'
             })
             
             df = df.merge(player_team_stats, on=['PLAYER_TEAM', 'SEASON'], how='left')
             
-            # Create interaction features
-            # 1. Playing vs strong defense hurts scoring
-            if 'OPP_DEF_RATING' in df.columns:
-                df['VS_STRONG_DEFENSE'] = (df['OPP_DEF_RATING'] < 105).astype(int)  # Good defense = rating < 105
-                df['DEF_RATING_IMPACT'] = 115 - df['OPP_DEF_RATING']  # Higher = easier to score
+            # =================================================================
+            # NEW REBOUNDING OPPORTUNITY FEATURES
+            # =================================================================
             
-            # 2. Pace affects total possessions (more possessions = more stats)
-            if 'TEAM_PACE' in df.columns and 'OPP_PACE' in df.columns:
-                df['GAME_PACE_EST'] = (df['TEAM_PACE'] + df['OPP_PACE']) / 2
+            # 1. Rebounding opportunities based on shot volume (NEW FEATURE #4)
+            if 'OPP_FGA' in df.columns and 'TEAM_FGA' in df.columns:
+                # Estimate total missed shots in a game (= rebounding opportunities)
+                # Opponent's FGA * (1 - Opponent's FG%) = opponent's missed shots = our DREB opportunities
+                if 'OPP_FG_PCT' in df.columns:
+                    df['OPP_MISSED_SHOTS'] = df['OPP_FGA'] * (1 - df['OPP_FG_PCT'])  # DREB opportunities
+                
+                # Our team's FGA * (1 - Team FG%) = our missed shots = our OREB opportunities
+                if 'TEAM_FG_PCT' in df.columns:
+                    df['TEAM_MISSED_SHOTS'] = df['TEAM_FGA'] * (1 - df['TEAM_FG_PCT'])  # OREB opportunities
+                
+                # Total rebounding opportunities in a game
+                df['TOTAL_REBOUND_OPP'] = df['OPP_FGA'] + df['TEAM_FGA']
+            
+            # 2. Opponent rebounding strength (NEW FEATURE #1)
+            if 'OPP_DREB_PCT' in df.columns:
+                # High opponent DREB% = they grab more defensive rebounds = less for us to get offensively
+                df['OPP_DREB_STRENGTH'] = df['OPP_DREB_PCT']  # Higher = harder to get OREB
+                df['OPP_WEAK_DREB'] = (df['OPP_DREB_PCT'] < 0.73).astype(int)  # Weak defensive rebounding
+            
+            if 'OPP_OREB_PCT' in df.columns:
+                # High opponent OREB% = they're good at offensive rebounding = less DREB for us
+                df['OPP_OREB_STRENGTH'] = df['OPP_OREB_PCT']
+                df['OPP_WEAK_OREB'] = (df['OPP_OREB_PCT'] < 0.25).astype(int)
+            
+            # 3. Pace-adjusted rebounding opportunities (NEW FEATURE #3)
+            if 'GAME_PACE_EST' in df.columns or ('TEAM_PACE' in df.columns and 'OPP_PACE' in df.columns):
+                if 'GAME_PACE_EST' not in df.columns:
+                    df['GAME_PACE_EST'] = (df['TEAM_PACE'] + df['OPP_PACE']) / 2
+                
                 df['IS_FAST_PACED'] = (df['GAME_PACE_EST'] > 100).astype(int)
+                
+                # Faster pace = more possessions = more shots = more rebounds
+                if 'TOTAL_REBOUND_OPP' in df.columns:
+                    df['PACE_ADJ_REB_OPP'] = df['TOTAL_REBOUND_OPP'] * (df['GAME_PACE_EST'] / 95.0)  # Normalize to league avg
             
-            # 3. Team quality differential
+            # 4. Existing features (defensive strength, team quality)
+            if 'OPP_DEF_RATING' in df.columns:
+                df['VS_STRONG_DEFENSE'] = (df['OPP_DEF_RATING'] < 105).astype(int)
+                df['DEF_RATING_IMPACT'] = 115 - df['OPP_DEF_RATING']
+            
             if 'TEAM_NET_RATING' in df.columns and 'OPP_NET_RATING' in df.columns:
                 df['TEAM_QUALITY_DIFF'] = df['TEAM_NET_RATING'] - df['OPP_NET_RATING']
                 df['IS_UNDERDOG'] = (df['TEAM_QUALITY_DIFF'] < -5).astype(int)
                 df['IS_FAVORITE'] = (df['TEAM_QUALITY_DIFF'] > 5).astype(int)
+            
+            # =================================================================
+            # STAT-SPECIFIC MATCHUP FEATURES (FOR IMPROVING ALL PREDICTIONS)
+            # =================================================================
+            
+            # ASSIST FEATURES
+            if 'OPP_AST' in df.columns and 'TEAM_AST' in df.columns:
+                # Playing on a high-assist team = more assist opportunities
+                df['TEAM_AST_RATE'] = df['TEAM_AST']
+                df['IS_HIGH_AST_TEAM'] = (df['TEAM_AST'] > 24).astype(int)  # League avg ~24
+                
+                # Opponent allows assists
+                df['OPP_AST_ALLOWED'] = df['OPP_AST']
+            
+            # TURNOVER FEATURES
+            if 'OPP_STL' in df.columns:
+                # Opponent steals = defensive pressure = more turnovers
+                df['OPP_DEFENSIVE_PRESSURE'] = df['OPP_STL']
+                df['VS_HIGH_PRESSURE_DEF'] = (df['OPP_STL'] > 8).astype(int)
+            
+            if 'OPP_TOV' in df.columns:
+                # High opponent TOV = sloppy team = good for our steals
+                df['OPP_TURNOVER_PRONE'] = df['OPP_TOV']
+                df['VS_SLOPPY_TEAM'] = (df['OPP_TOV'] > 15).astype(int)
+            
+            # STEAL FEATURES
+            # Already handled above with OPP_TOV
+            
+            # BLOCK FEATURES
+            if 'OPP_BLK' in df.columns:
+                # High opponent blocks = harder to score inside
+                df['OPP_RIM_PROTECTION'] = df['OPP_BLK']
+                df['VS_STRONG_RIM_PROTECT'] = (df['OPP_BLK'] > 5).astype(int)
+            
+            if 'OPP_FGA' in df.columns and 'OPP_FG3A' in df.columns:
+                # Opponent's inside shots = block opportunities for us
+                df['OPP_INSIDE_SHOTS'] = df['OPP_FGA'] - df['OPP_FG3A']
+            
+            # FREE THROW FEATURES
+            if 'OPP_FTA' in df.columns:
+                # High opponent FTA = they foul a lot = more FT opportunities
+                df['OPP_FOUL_RATE'] = df['OPP_FTA']
+                df['VS_FOUL_PRONE_TEAM'] = (df['OPP_FTA'] > 25).astype(int)
+            
+            # FIELD GOAL / 3-POINTER FEATURES
+            if 'OPP_FG_PCT' in df.columns:
+                # Worse opponent defense = easier to score
+                df['OPP_FG_DEF_QUALITY'] = 1 - df['OPP_FG_PCT']  # Inverse (higher = better for us)
+            
+            if 'OPP_FG3_PCT' in df.columns:
+                # Opponent 3P defense
+                df['OPP_3P_DEF_QUALITY'] = 1 - df['OPP_FG3_PCT']
+                df['VS_WEAK_3P_DEF'] = (df['OPP_FG3_PCT'] > 0.365).astype(int)
+            
+            # POINTS SCORING CONTEXT
+            if 'TEAM_PTS' in df.columns and 'OPP_PTS' in df.columns:
+                # High-scoring teams/games = more points for everyone
+                df['GAME_SCORING_PACE'] = (df['TEAM_PTS'] + df['OPP_PTS']) / 2
+                df['IS_HIGH_SCORING_GAME'] = (df['GAME_SCORING_PACE'] > 110).astype(int)
         
         # Historical performance vs opponent (player-specific)
         if 'OPPONENT_STRENGTH' not in df.columns:
@@ -531,6 +728,60 @@ class NBAFeatureEngineering:
         # College to NBA translation (for rookies/young players)
         if 'COLLEGE_PPG' in df.columns and 'IS_ROOKIE' in df.columns:
             df['COLLEGE_NBA_SCORING_RATIO'] = df['COLLEGE_PPG'] / df['PTS_L10_AVG'].replace(0, np.nan)
+        
+        # =================================================================
+        # REBOUNDING-SPECIFIC INTERACTION FEATURES (NEW FOR REBOUNDING IMPROVEMENT)
+        # =================================================================
+        
+        # 1. Height x Rebounding Opportunities (taller players benefit more from opportunities)
+        if 'height_inches' in df.columns and 'TOTAL_REBOUND_OPP' in df.columns:
+            # Normalize height (0-1 scale, 66" to 90")
+            df['HEIGHT_NORM'] = (df['height_inches'] - 66) / 24
+            df['HEIGHT_REB_OPP'] = df['HEIGHT_NORM'] * df['TOTAL_REBOUND_OPP']
+            
+            # Height advantage for specific rebounds
+            if 'OPP_MISSED_SHOTS' in df.columns:
+                df['HEIGHT_DREB_OPP'] = df['HEIGHT_NORM'] * df['OPP_MISSED_SHOTS']
+            if 'TEAM_MISSED_SHOTS' in df.columns:
+                df['HEIGHT_OREB_OPP'] = df['HEIGHT_NORM'] * df['TEAM_MISSED_SHOTS']
+        
+        # 2. Minutes x Rebounding Opportunities (NEW FEATURE #5: More minutes = more opportunities)
+        if 'MIN_L5_TOTAL' in df.columns:
+            # Average minutes per game (last 5)
+            df['AVG_MIN_L5'] = df['MIN_L5_TOTAL'] / 5
+            
+            if 'TOTAL_REBOUND_OPP' in df.columns:
+                df['MIN_REB_OPP'] = df['AVG_MIN_L5'] * df['TOTAL_REBOUND_OPP'] / 48  # Normalize to 48 min game
+            
+            # More minutes when well-rested = better rebounding
+            if 'IS_WELL_RESTED' in df.columns:
+                df['RESTED_MIN_BOOST'] = df['IS_WELL_RESTED'] * df['AVG_MIN_L5']
+        
+        # 3. Position x Rebounding Context (forwards/centers should rebound more)
+        if 'position_encoded' in df.columns:
+            # Create position-based rebounding multipliers
+            # Assuming encoding: 0=Guard, 1=Forward, 2=Center (adjust if different)
+            df['POSITION_REB_WEIGHT'] = df['position_encoded'] / 2  # 0 for guards, 0.5 for forwards, 1 for centers
+            
+            if 'TOTAL_REBOUND_OPP' in df.columns:
+                df['POSITION_REB_OPP'] = df['POSITION_REB_WEIGHT'] * df['TOTAL_REBOUND_OPP']
+        
+        # 4. Opponent Rebounding Weakness x Player Rebounding Skill
+        if 'OPP_WEAK_DREB' in df.columns and 'DREB_L10_AVG' in df.columns:
+            # If opponent is weak at DREB and player is good at OREB, boost
+            if 'OREB_L10_AVG' in df.columns:
+                df['OREB_MATCHUP_ADVANTAGE'] = df['OPP_WEAK_DREB'] * df['OREB_L10_AVG']
+        
+        if 'OPP_WEAK_OREB' in df.columns and 'DREB_L10_AVG' in df.columns:
+            # If opponent is weak at OREB and player is good at DREB, boost  
+            df['DREB_MATCHUP_ADVANTAGE'] = df['OPP_WEAK_OREB'] * df['DREB_L10_AVG']
+        
+        # 5. Pace x Player's Rebounding Rate
+        if 'GAME_PACE_EST' in df.columns:
+            if 'OREB_L10_AVG' in df.columns:
+                df['PACE_OREB_BOOST'] = (df['GAME_PACE_EST'] / 95) * df['OREB_L10_AVG']
+            if 'DREB_L10_AVG' in df.columns:
+                df['PACE_DREB_BOOST'] = (df['GAME_PACE_EST'] / 95) * df['DREB_L10_AVG']
         
         return df
     

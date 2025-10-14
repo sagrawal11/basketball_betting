@@ -53,9 +53,19 @@ class TeamStatsCollector:
             )
             advanced_df = advanced_stats.get_data_frames()[0]
             
+            # Extract basic stats (rebounds, FGA, etc.)
+            basic_columns = ['TEAM_ID', 'TEAM_NAME', 'W', 'L', 'FGA', 'FG_PCT', 'FG3A', 'FG3_PCT', 
+                           'FTA', 'OREB', 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK', 'PTS']
+            basic_stats_subset = basic_df[[col for col in basic_columns if col in basic_df.columns]]
+            
+            # Extract advanced stats
+            advanced_columns = ['TEAM_ID', 'OFF_RATING', 'DEF_RATING', 'NET_RATING', 'PACE', 
+                              'W_PCT', 'TS_PCT', 'OREB_PCT', 'DREB_PCT']
+            advanced_stats_subset = advanced_df[[col for col in advanced_columns if col in advanced_df.columns]]
+            
             # Merge to get both basic info and advanced stats
-            team_stats = basic_df[['TEAM_ID', 'TEAM_NAME']].merge(
-                advanced_df[['TEAM_ID', 'OFF_RATING', 'DEF_RATING', 'NET_RATING', 'PACE', 'W_PCT']],
+            team_stats = basic_stats_subset.merge(
+                advanced_stats_subset,
                 on='TEAM_ID',
                 how='left'
             )
@@ -139,7 +149,8 @@ class TeamStatsCollector:
                 'seasons': len(seasons),
                 'teams_per_season': int(len(combined_df) / len(seasons)),
                 'seasons_covered': [s for s in seasons if any(combined_df['SEASON'] == s)],
-                'key_columns': ['TEAM_ABBREVIATION', 'OFF_RATING', 'DEF_RATING', 'PACE', 'NET_RATING', 'W_PCT']
+                'key_columns': ['TEAM_ABBREVIATION', 'OFF_RATING', 'DEF_RATING', 'PACE', 'NET_RATING', 
+                               'W_PCT', 'OREB', 'DREB', 'REB', 'FGA', 'FG_PCT', 'OREB_PCT', 'DREB_PCT']
             }
             
             summary_file = self.output_dir / "team_stats_summary.json"
@@ -159,11 +170,11 @@ def main():
     print("=" * 70)
     print()
     print("Collecting team-level stats for all seasons (1996-2024):")
-    print("  📊 Offensive Rating")
-    print("  🛡️  Defensive Rating")
-    print("  ⚡ Pace")
-    print("  📈 Net Rating")
-    print("  🏆 Win Percentage")
+    print("  📊 Offensive Rating, Defensive Rating")
+    print("  ⚡ Pace, Net Rating, Win %")
+    print("  🏀 Rebounds (OREB, DREB, REB)")
+    print("  🎯 Shot Volume (FGA, FG3A)")
+    print("  📈 Percentages (FG%, OREB%, DREB%)")
     print()
     print("⏱️  Estimated time: 5 minutes")
     print("📁 Saves to: team_stats/all_team_stats.csv")
