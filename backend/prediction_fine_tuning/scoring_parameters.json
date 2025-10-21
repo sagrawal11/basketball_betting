@@ -1,0 +1,15 @@
+{
+  "season_analyzed": "2024-25",
+  "games_analyzed": 2460,
+  "avg_team_score": 103.9,
+  "top_5_scoring_percentage": 0.828,
+  "top_8_scoring_percentage": 0.977,
+  "bench_contribution_avg": 2.5,
+  "bench_contribution_median": 0.0,
+  "recommended_formula": {
+    "description": "For predicting team scores from individual predictions",
+    "if_have_top_5": "team_score = top_5_total / 0.828 OR top_5_total + 2.5 bench",
+    "if_have_top_8": "team_score = top_8_total / 0.977 OR top_8_total + 2.4 bench",
+    "if_have_all_rotation": "team_score = all_players_total (no scaling needed)"
+  }
+}

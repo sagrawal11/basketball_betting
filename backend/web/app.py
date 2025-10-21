@@ -264,12 +264,26 @@ def get_game_players(game_id):
         home_players = [p for p in players_with_predictions if p['is_home']]
         away_players = [p for p in players_with_predictions if not p['is_home']]
         
-        # Calculate predicted team scores (sum of ALL players + bench estimate)
+        # Calculate predicted team scores using LEARNED parameters from 2024-25 analysis
+        # Analysis showed: Top 5 = 82.8%, Top 8 = 97.7% of team score
         home_score = sum([p['stats']['points'] for p in home_players]) if home_players else 0
         away_score = sum([p['stats']['points'] for p in away_players]) if away_players else 0
         
-        # Add bench contribution estimate (~20-25 points typically)
-        bench_contribution = 22
+        # Determine which scaling to use based on number of players
+        if len(home_players) >= 8:
+            # Have rotation players (top 8-10) = ~97.7% of score
+            # Add small deep bench contribution (learned: 2.5 points)
+            home_final = home_score + 3
+            away_final = away_score + 3
+        elif len(home_players) >= 5:
+            # Have top 5 starters = ~82.8% of score
+            # Scale up: total = top_5 / 0.828
+            home_final = home_score / 0.828
+            away_final = away_score / 0.828
+        else:
+            # Not enough data, use average (103.9 points)
+            home_final = 104
+            away_final = 104
         
         # Format to match React expectations
         return jsonify({
@@ -277,12 +291,12 @@ def get_game_players(game_id):
             'homeTeam': {
                 'name': home_players[0]['team'] if home_players else home_abbrev,
                 'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg",
-                'predictedScore': round(home_score + bench_contribution)
+                'predictedScore': round(home_final)
             },
             'awayTeam': {
                 'name': away_players[0]['team'] if away_players else away_abbrev,
                 'logo': f"https://cdn.nba.com/logos/nba/{away_team_id}/global/L/logo.svg",
-                'predictedScore': round(away_score + bench_contribution)
+                'predictedScore': round(away_final)
             },
             'date': today.strftime('%B %d, %Y'),
             'time': '7:30 PM ET',  # Can enhance with actual game time
