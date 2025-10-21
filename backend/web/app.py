@@ -6,6 +6,7 @@ Flask web app for making data-driven betting decisions
 """
 
 from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
 from datetime import datetime, timedelta
 import sys
 from pathlib import Path
@@ -19,6 +20,9 @@ from models.betting_recommender import BettingRecommender
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'nba-betting-secret-key-change-in-production'
+
+# Enable CORS for React frontend (allow all origins during development)
+CORS(app)
 
 # Get absolute paths
 backend_dir = Path(__file__).parent.parent
@@ -100,12 +104,22 @@ def get_todays_games():
                             elif team.get('TEAM_ID') == visitor_team_id:
                                 away_team['score'] = team.get('PTS') or 0
                 
+                # Format to match React component expectations
                 formatted_games.append({
-                    'game_id': game_id,
-                    'home_team': home_team,
-                    'away_team': away_team,
-                    'game_time': game.get('GAME_DATE_EST'),
-                    'status': game.get('GAME_STATUS_TEXT', 'Scheduled')
+                    'id': game_id,
+                    'homeTeam': {
+                        'name': home_team['name'],
+                        'abbrev': home_team['abbrev'],
+                        'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg"
+                    },
+                    'awayTeam': {
+                        'name': away_team['name'],
+                        'abbrev': away_team['abbrev'],
+                        'logo': f"https://cdn.nba.com/logos/nba/{visitor_team_id}/global/L/logo.svg"
+                    },
+                    'time': game.get('GAME_STATUS_TEXT', 'TBD'),
+                    'date': today.strftime('%B %d, %Y'),
+                    'location': 'NBA Arena'  # Can enhance this later
                 })
         
         print(f"✅ Found {len(formatted_games)} games")
@@ -113,7 +127,8 @@ def get_todays_games():
         return jsonify({
             'success': True,
             'games': formatted_games,
-            'date': today.strftime('%Y-%m-%d')
+            'date': today.strftime('%Y-%m-%d'),
+            'count': len(formatted_games)
         })
         
     except Exception as e:
@@ -208,19 +223,34 @@ def get_game_players(game_id):
                         )
                         
                         if preds:
-                            # Convert numpy types to Python native types for JSON serialization
-                            clean_preds = {}
-                            for key, value in preds.items():
-                                if isinstance(value, (np.integer, np.floating)):
-                                    clean_preds[key] = float(value)
-                                else:
-                                    clean_preds[key] = value
+                            # Get player ID for headshot
+                            from nba_api.stats.static import players as nba_players
+                            all_players = nba_players.get_players()
+                            player_info = next((p for p in all_players if p['full_name'] == player_name), None)
+                            player_id = player_info['id'] if player_info else None
+                            
+                            # Get position
+                            position = player.get('POSITION', 'G')
+                            
+                            # Format stats to match React component - ALL rounded to 1 decimal
+                            player_stats = {
+                                'points': round(float(preds.get('PTS', 0)), 1),
+                                'rebounds': round(float(preds.get('DREB', 0)) + float(preds.get('OREB', 0)), 1),
+                                'assists': round(float(preds.get('AST', 0)), 1),
+                                'steals': round(float(preds.get('STL', 0)), 1),
+                                'blocks': round(float(preds.get('BLK', 0)), 1),
+                                'fg': f"{float(preds.get('FGM', 0)) / (float(preds.get('FGM', 0)) / 0.47 + 0.1) * 100:.1f}",  # Estimate FG%
+                                'threePt': f"{float(preds.get('FG3M', 0)) / (float(preds.get('FG3M', 0)) / 0.37 + 0.1) * 100:.1f}",  # Estimate 3P%
+                                'ft': f"{float(preds.get('FTM', 0)) / (float(preds.get('FTM', 0)) / 0.80 + 0.1) * 100:.1f}"  # Estimate FT%
+                            }
                             
                             players_with_predictions.append({
                                 'name': player_name,
+                                'position': position,
+                                'image': f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png" if player_id else "https://via.placeholder.com/260x190?text=No+Image",
+                                'stats': player_stats,
                                 'team': team_abbrev,
-                                'is_home': is_home_team,
-                                'predictions': clean_preds
+                                'is_home': is_home_team
                             })
                             print(f"  ✅ {player_name}")
                         
@@ -230,10 +260,35 @@ def get_game_players(game_id):
         
         print(f"✅ Generated predictions for {len(players_with_predictions)} players")
         
+        # Separate into home and away players
+        home_players = [p for p in players_with_predictions if p['is_home']]
+        away_players = [p for p in players_with_predictions if not p['is_home']]
+        
+        # Calculate predicted team scores (sum of ALL players + bench estimate)
+        home_score = sum([p['stats']['points'] for p in home_players]) if home_players else 0
+        away_score = sum([p['stats']['points'] for p in away_players]) if away_players else 0
+        
+        # Add bench contribution estimate (~20-25 points typically)
+        bench_contribution = 22
+        
+        # Format to match React expectations
         return jsonify({
             'success': True,
-            'game_id': game_id,
-            'players': players_with_predictions
+            'homeTeam': {
+                'name': home_players[0]['team'] if home_players else home_abbrev,
+                'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg",
+                'predictedScore': round(home_score + bench_contribution)
+            },
+            'awayTeam': {
+                'name': away_players[0]['team'] if away_players else away_abbrev,
+                'logo': f"https://cdn.nba.com/logos/nba/{away_team_id}/global/L/logo.svg",
+                'predictedScore': round(away_score + bench_contribution)
+            },
+            'date': today.strftime('%B %d, %Y'),
+            'time': '7:30 PM ET',  # Can enhance with actual game time
+            'location': 'NBA Arena',
+            'homePlayers': [{'name': p['name'], 'position': p['position'], 'image': p['image'], 'stats': p['stats']} for p in home_players],
+            'awayPlayers': [{'name': p['name'], 'position': p['position'], 'image': p['image'], 'stats': p['stats']} for p in away_players]
         })
         
     except Exception as e:
@@ -332,9 +387,10 @@ def analyze_bet():
 if __name__ == '__main__':
     print("🏀 NBA Betting Assistant")
     print("=" * 80)
-    print("Starting server at http://localhost:5000")
+    print("Starting server at http://localhost:5001")
     print("Press Ctrl+C to stop")
+    print("Note: Using port 5001 (port 5000 is taken by AirPlay)")
     print()
     
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001, host='127.0.0.1')
 
