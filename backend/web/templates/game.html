@@ -260,73 +260,79 @@
     });
     
     async function loadPlayers() {
-        // For now, we'll use a simplified version
-        // We'll load roster manually since NBA API needs game day data
-        
         const loading = document.getElementById('loading');
         const playersContainer = document.getElementById('players-container');
         
         loading.style.display = 'block';
+        playersContainer.innerHTML = '';
         
-        // Mock players for now - you can replace with actual roster fetch
-        const mockPlayers = [
-            { name: 'LeBron James', team: homeTeam },
-            { name: 'Stephen Curry', team: awayTeam },
-            { name: 'Anthony Davis', team: homeTeam },
-            { name: 'Klay Thompson', team: awayTeam }
-        ];
-        
-        // Generate predictions for each player
-        const playersHTML = await Promise.all(mockPlayers.map(async player => {
-            const prediction = await getPrediction(player.name, 
-                player.team === homeTeam ? awayTeam : homeTeam, 
-                player.team === homeTeam);
+        try {
+            // Fetch rosters with pre-generated predictions
+            const response = await fetch(`/api/game/${gameId}/players?home=${homeTeam}&away=${awayTeam}`);
+            const data = await response.json();
             
-            if (!prediction.success) {
-                return ''; // Skip players without predictions
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load players');
             }
             
-            const preds = prediction.predictions;
+            const players = data.players;
             
-            return `
-                <div class="player-card">
-                    <div class="player-name">${player.name}</div>
-                    <div class="player-team">${player.team}</div>
-                    <div class="stats-grid">
-                        ${Object.keys(preds).filter(k => !k.includes('_')).map(stat => `
-                            <div class="stat-item" onclick="openBetModal('${player.name}', '${stat}', ${preds[stat]}, '${preds[stat + '_confidence'] || 'Medium'}', '${player.team === homeTeam}', '${player.team === homeTeam ? awayTeam : homeTeam}')">
+            if (players.length === 0) {
+                loading.style.display = 'none';
+                playersContainer.innerHTML = '<div class="no-games"><h2>No trained models found for players in this game</h2></div>';
+                playersContainer.style.display = 'block';
+                return;
+            }
+            
+            // Generate player cards
+            const playersHTML = players.map(player => {
+                const preds = player.predictions;
+            
+                const statsHTML = Object.keys(preds)
+                    .filter(k => !k.includes('_') && !k.includes('auto') && !k.includes('player') && !k.includes('base'))
+                    .map(stat => {
+                        const value = preds[stat];
+                        const conf = preds[stat + '_confidence'] || 'Medium';
+                        const opponent = player.is_home ? awayTeam : homeTeam;
+                        
+                        // Format value safely
+                        let displayValue = 'N/A';
+                        if (typeof value === 'number') {
+                            displayValue = value.toFixed(1);
+                        } else if (value !== null && value !== undefined) {
+                            displayValue = String(value);
+                        }
+                        
+                        return `
+                            <div class="stat-item" onclick='openBetModal(${JSON.stringify(player.name)}, "${stat}", ${value}, "${conf}", ${player.is_home}, "${opponent}")'>
                                 <div class="stat-label">${stat}</div>
-                                <div class="stat-value">${preds[stat]?.toFixed(1) || 'N/A'}</div>
-                                <div class="stat-confidence confidence-${(preds[stat + '_confidence'] || 'medium').toLowerCase()}">
-                                    ${preds[stat + '_confidence'] || 'Medium'}
+                                <div class="stat-value">${displayValue}</div>
+                                <div class="stat-confidence confidence-${conf.toLowerCase()}">
+                                    ${conf}
                                 </div>
                             </div>
-                        `).join('')}
+                        `;
+                    }).join('');
+                
+                return `
+                    <div class="player-card">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-team">${player.team}</div>
+                        <div class="stats-grid">
+                            ${statsHTML}
+                        </div>
                     </div>
-                </div>
-            `;
-        }));
-        
-        loading.style.display = 'none';
-        playersContainer.innerHTML = playersHTML.join('');
-        playersContainer.style.display = 'grid';
-    }
-    
-    async function getPrediction(playerName, opponent, isHome) {
-        try {
-            const response = await fetch('/api/predict', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    player_name: playerName,
-                    opponent: opponent,
-                    is_home: isHome,
-                    game_date: new Date().toISOString().split('T')[0]
-                })
-            });
-            return await response.json();
+                `;
+            }).join('');
+            
+            loading.style.display = 'none';
+            playersContainer.innerHTML = playersHTML;
+            playersContainer.style.display = 'grid';
+            
         } catch (error) {
-            return { success: false, error: error.message };
+            loading.style.display = 'none';
+            playersContainer.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            playersContainer.style.display = 'block';
         }
     }
     

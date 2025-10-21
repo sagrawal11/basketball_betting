@@ -139,21 +139,54 @@ class NBAGamePredictor:
         # Create feature dictionary
         features = {}
         
-        # 1. ROLLING AVERAGES (from recent games)
+        # 1. ROLLING AVERAGES (from recent games) - FOR ALL STATS
+        # Include ALL stats that exist in the data, not just target variables
+        all_stats_to_roll = ['PTS', 'OREB', 'DREB', 'REB', 'AST', 'FTM', 'FTA', 'FG3M', 'FG3A', 
+                            'FGM', 'FGA', 'STL', 'BLK', 'TOV', 'PF', 'MIN', 'FG_PCT', 'FG3_PCT', 'FT_PCT']
+        
         for window in [3, 5, 10, 20]:
             games_for_window = recent_games.tail(min(window, len(recent_games)))
             
-            for stat in self.target_variables:
+            for stat in all_stats_to_roll:
                 if stat in games_for_window.columns:
-                    features[f'{stat}_L{window}_AVG'] = games_for_window[stat].mean()
-                    features[f'{stat}_L{window}_STD'] = games_for_window[stat].std()
-                    features[f'{stat}_L{window}_MAX'] = games_for_window[stat].max()
+                    # Generate BOTH naming formats (model uses both)
+                    avg_val = games_for_window[stat].mean()
+                    std_val = games_for_window[stat].std()
+                    max_val = games_for_window[stat].max()
+                    
+                    features[f'{stat}_L{window}_AVG'] = avg_val
+                    features[f'{stat}_L{window}_STD'] = std_val
+                    features[f'{stat}_L{window}_MAX'] = max_val
+                    features[f'{stat}_LAST_{window}_AVG'] = avg_val  # Duplicate naming
+                    
+                    if window in [3, 5, 10, 20]:  # Calculate trends for all windows
+                        # Trend: difference between recent and season average
+                        features[f'{stat}_TREND_L{window}'] = avg_val - recent_games[stat].mean()
+                        # Recent vs season comparison
+                        if window == 10:
+                            features[f'{stat}_RECENT_VS_SEASON'] = avg_val / (recent_games[stat].mean() + 0.001)
         
-        # 2. CAREER STATS (expanding averages)
-        for stat in self.target_variables:
+        # 2. CAREER STATS & CONSISTENCY
+        for stat in all_stats_to_roll:
             if stat in recent_games.columns:
                 features[f'{stat}_CAREER_AVG'] = recent_games[stat].mean()
                 features[f'{stat}_CAREER_STD'] = recent_games[stat].std()
+                
+                # Consistency: coefficient of variation (lower = more consistent)
+                mean_val = recent_games[stat].mean()
+                std_val = recent_games[stat].std()
+                if mean_val > 0:
+                    features[f'{stat}_CONSISTENCY'] = 1 - (std_val / mean_val)
+                else:
+                    features[f'{stat}_CONSISTENCY'] = 0
+                
+                # Trend: last 10 vs career
+                if len(recent_games) >= 10:
+                    recent_avg = recent_games[stat].tail(10).mean()
+                    career_avg = recent_games[stat].mean()
+                    features[f'{stat}_TREND'] = recent_avg - career_avg
+                else:
+                    features[f'{stat}_TREND'] = 0
         
         # 3. CONTEXTUAL FEATURES
         features['IS_HOME'] = 1 if is_home else 0
@@ -170,12 +203,20 @@ class NBAGamePredictor:
             features['IS_WELL_RESTED'] = 1 if days_rest >= 3 else 0
             features['REST_ENCODED'] = 2 if days_rest >= 2 else (1 if days_rest == 1 else 0)
         
-        # 5. PLAYER INFO
+        # 5. PLAYER INFO & BASIC STATS
         if 'height' in recent_games.columns:
             height = recent_games['height'].iloc[-1]
             features['height_inches'] = self._height_to_inches(height) if pd.notna(height) else 75
         else:
             features['height_inches'] = 75  # Default
+        
+        if 'weight' in recent_games.columns:
+            features['weight'] = recent_games['weight'].iloc[-1]
+        else:
+            features['weight'] = 220  # Default
+        
+        if 'draft_year' in recent_games.columns:
+            features['draft_year'] = recent_games['draft_year'].iloc[-1]
         
         if 'position_encoded' in recent_games.columns:
             features['position_encoded'] = recent_games['position_encoded'].iloc[-1]
@@ -187,6 +228,21 @@ class NBAGamePredictor:
             features['YEARS_EXPERIENCE'] = int(features['season_exp'])
             features['IS_ROOKIE'] = 1 if features['YEARS_EXPERIENCE'] == 0 else 0
             features['IS_VETERAN'] = 1 if features['YEARS_EXPERIENCE'] >= 5 else 0
+        
+        # Personal fouls average
+        if 'PF' in recent_games.columns:
+            features['PF'] = recent_games['PF'].tail(10).mean()
+        
+        # Derived ratios
+        if 'AST' in recent_games.columns and 'TOV' in recent_games.columns:
+            ast_avg = recent_games['AST'].tail(10).mean()
+            tov_avg = recent_games['TOV'].tail(10).mean()
+            features['AST_TO_RATIO'] = ast_avg / (tov_avg + 0.1)
+        
+        # Minutes
+        if 'MIN' in recent_games.columns:
+            features['AVG_MIN_L5'] = recent_games['MIN'].tail(5).mean()
+            features['AVG_MIN_L10'] = recent_games['MIN'].tail(10).mean()
         
         # 6. TEAM STATS & OPPONENT FEATURES
         player_team = recent_games['PLAYER_TEAM'].iloc[-1] if 'PLAYER_TEAM' in recent_games.columns else None
@@ -217,8 +273,59 @@ class NBAGamePredictor:
         features['MONTH_SIN'] = np.sin(2 * np.pi * features['GAME_MONTH'] / 12)
         features['MONTH_COS'] = np.cos(2 * np.pi * features['GAME_MONTH'] / 12)
         
-        # 8. CAREER PROGRESSION
+        # 8. CAREER PROGRESSION & GAME CONTEXT  
         features['CAREER_GAME_NUM'] = len(recent_games)
+        features['GAME_NUMBER_IN_SEASON'] = min(len(recent_games), 82)  # Approximate
+        features['OPPONENT_STRENGTH'] = features.get('OPP_NET_RATING', 0)  # Use opponent net rating
+        features['IS_EARLY_SEASON'] = 1 if features['GAME_NUMBER_IN_SEASON'] < 10 else 0
+        
+        # Win indicator (from last game)
+        if 'WL' in recent_games.columns:
+            features['WIN'] = 1 if recent_games['WL'].iloc[-1] == 'W' else 0
+        
+        # Games in last 7 days
+        if 'GAME_DATE' in recent_games.columns:
+            recent_7days = recent_games[recent_games['GAME_DATE'] >= (pd.to_datetime(game_date) - pd.Timedelta(days=7))]
+            features['GAMES_LAST_7_DAYS'] = len(recent_7days)
+        
+        # Team style indicators
+        if self.team_stats is not None:
+            player_team = recent_games['PLAYER_TEAM'].iloc[-1] if 'PLAYER_TEAM' in recent_games.columns else None
+            if player_team:
+                team_data = self._get_team_stats(player_team, season)
+                if team_data:
+                    features['IS_HIGH_AST_TEAM'] = 1 if team_data.get('AST', 0) > 25 else 0
+        
+        # 9. COLLEGE STATS PLACEHOLDERS
+        # (We don't have college data, use defaults based on NBA performance as proxy)
+        features['COLLEGE_PPG'] = features.get('PTS_CAREER_AVG', 20) * 0.8  # Rough estimate
+        features['COLLEGE_RPG'] = features.get('REB_CAREER_AVG', 5) * 0.9
+        features['COLLEGE_APG'] = features.get('AST_CAREER_AVG', 3) * 0.7
+        features['COLLEGE_FG_PCT'] = features.get('FG_PCT_LAST_10_AVG', 0.45)
+        features['COLLEGE_3P_PCT'] = features.get('FG3_PCT_LAST_10_AVG', 0.35)
+        features['COLLEGE_FT_PCT'] = features.get('FT_PCT_LAST_10_AVG', 0.75)
+        features['COLLEGE_SEASONS'] = 2  # Assume 2 years
+        features['COLLEGE_NBA_SCORING_RATIO'] = 0.8  # Placeholder
+        
+        # 10. ARCHETYPE ENCODINGS
+        # Derive from position and stats
+        pos = features.get('position_encoded', 0)
+        pts_avg = features.get('PTS_CAREER_AVG', 15)
+        ast_avg = features.get('AST_CAREER_AVG', 3)
+        reb_avg = features.get('REB_CAREER_AVG', 5)
+        
+        features['ARCHETYPE_PRIMARY_ROLE_ENCODED'] = pos
+        features['ARCHETYPE_PLAYMAKING_ENCODED'] = min(ast_avg / 10, 1)
+        features['ARCHETYPE_REBOUNDING_ENCODED'] = min(reb_avg / 12, 1)
+        features['ARCHETYPE_USAGE_ENCODED'] = min(pts_avg / 30, 1)
+        features['ARCHETYPE_SHOOTING_STYLE_ENCODED'] = features.get('FG3A_LAST_10_AVG', 5) / 10
+        features['ARCHETYPE_EFFICIENCY_ENCODED'] = features.get('FG_PCT_LAST_10_AVG', 0.45)
+        features['ARCHETYPE_FREE_THROW_ENCODED'] = features.get('FTA_LAST_10_AVG', 5) / 10
+        features['ARCHETYPE_DEFENSE_ENCODED'] = (features.get('STL_CAREER_AVG', 1) + features.get('BLK_CAREER_AVG', 0.5)) / 3
+        features['ARCHETYPE_VERSATILITY_ENCODED'] = (pts_avg + ast_avg + reb_avg) / 50
+        features['ARCHETYPE_PLAYING_TIME_ENCODED'] = features.get('AVG_MIN_L10', 30) / 48
+        features['ARCHETYPE_CONSISTENCY_ENCODED'] = features.get('PTS_CONSISTENCY', 0.5)
+        features['ARCHETYPE_PLAY_STYLE_ENCODED'] = pos / 2
         
         # ====================================================================
         # NEW: INJURY STATUS & TEAMMATES OUT (HIGH IMPACT INPUTS)
@@ -314,6 +421,23 @@ class NBAGamePredictor:
             (self.team_stats['SEASON'] == season)
         ]
         
+        # If no data for requested season, use most recent available season
+        if len(team_data) == 0:
+            # Get most recent season for this team
+            team_seasons = self.team_stats[
+                self.team_stats['TEAM_ABBREVIATION'] == team_abbrev
+            ]
+            
+            if len(team_seasons) > 0:
+                most_recent_season = team_seasons['SEASON'].max()
+                team_data = self.team_stats[
+                    (self.team_stats['TEAM_ABBREVIATION'] == team_abbrev) &
+                    (self.team_stats['SEASON'] == most_recent_season)
+                ]
+                print(f"  📊 Using {most_recent_season} stats for {team_abbrev} (current season not available)")
+            else:
+                return None
+        
         if len(team_data) == 0:
             return None
         
@@ -387,6 +511,56 @@ class NBAGamePredictor:
             height_norm = (features['height_inches'] - 66) / 24
             features['HEIGHT_NORM'] = height_norm
             features['HEIGHT_REB_OPP'] = height_norm * features['TOTAL_REBOUND_OPP']
+            features['HEIGHT_DREB_OPP'] = height_norm * features.get('OPP_DREB', 35)
+            features['HEIGHT_OREB_OPP'] = height_norm * features.get('OPP_OREB', 10)
+        
+        # Home court advantages for different player types
+        if features.get('IS_HOME', 0) == 1:
+            pts_avg = features.get('PTS_LAST_10_AVG', 15)
+            ast_avg = features.get('AST_LAST_10_AVG', 3)
+            fg3_avg = features.get('FG3M_LAST_10_AVG', 1)
+            
+            features['SCORER_HOME_BOOST'] = pts_avg * 0.03  # 3% home boost
+            features['HOME_AST_BOOST'] = ast_avg * 0.05  # 5% assist boost at home
+            features['SHOOTER_HOME_ADVANTAGE'] = fg3_avg * 0.04  # Shooters benefit from home
+        else:
+            features['SCORER_HOME_BOOST'] = 0
+            features['HOME_AST_BOOST'] = 0
+            features['SHOOTER_HOME_ADVANTAGE'] = 0
+        
+        # Rest boosts
+        if features.get('IS_WELL_RESTED', 0) == 1:
+            features['SCORER_REST_BOOST'] = features.get('PTS_LAST_10_AVG', 15) * 0.02
+            features['RESTED_MIN_BOOST'] = features.get('AVG_MIN_L5', 30) * 1.05
+        else:
+            features['SCORER_REST_BOOST'] = 0
+            features['RESTED_MIN_BOOST'] = features.get('AVG_MIN_L5', 30)
+        
+        # Experience boosts
+        exp = features.get('season_exp', 5)
+        features['SCORER_EXPERIENCE_BOOST'] = min(exp / 15, 1)  # Veterans more consistent
+        features['PLAYMAKER_EXPERIENCE_BOOST'] = min(exp / 12, 1)
+        
+        # Pace adjustments
+        pace = features.get('GAME_PACE_EST', 98)
+        features['PACE_ADJ_REB_OPP'] = pace / 95 * features.get('TOTAL_REBOUND_OPP', 170)
+        features['PACE_OREB_BOOST'] = (pace / 95) * features.get('OREB_LAST_10_AVG', 1)
+        features['PACE_DREB_BOOST'] = (pace / 95) * features.get('DREB_LAST_10_AVG', 5)
+        
+        # Matchup advantages
+        if 'OREB_LAST_10_AVG' in features and 'OPP_WEAK_DREB' in features:
+            features['OREB_MATCHUP_ADVANTAGE'] = features['OPP_WEAK_DREB'] * features['OREB_LAST_10_AVG']
+        if 'DREB_LAST_10_AVG' in features and 'OPP_WEAK_OREB' in features:
+            features['DREB_MATCHUP_ADVANTAGE'] = features['OPP_WEAK_OREB'] * features['DREB_LAST_10_AVG']
+        
+        # Position rebounding
+        pos = features.get('position_encoded', 0)
+        features['POSITION_REB_WEIGHT'] = pos / 2
+        features['POSITION_REB_OPP'] = features['POSITION_REB_WEIGHT'] * features.get('TOTAL_REBOUND_OPP', 170)
+        
+        # Defender features (simplified)
+        features['DEFENDER_STRENGTH'] = opp_data.get('DEF_RATING', 110) / 110
+        features['DEFENDER_MINUTES_INTERACTION'] = features.get('AVG_MIN_L10', 30) * features['DEFENDER_STRENGTH']
     
     def load_player_model(self, player_name: str, stat: str):
         """Load trained model for player and stat"""
