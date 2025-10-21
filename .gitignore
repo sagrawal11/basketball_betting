@@ -77,6 +77,10 @@ logs/
 .env.local
 .env.*.local
 
+# API keys (keep .template, ignore actual keys)
+backend/config/api_keys.json
+api_keys.json
+
 # Test files
 test_*.py
 *_test.py
