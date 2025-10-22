@@ -1,0 +1,334 @@
+{
+  "game_id": "0022500089",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:00:32.842092",
+  "home_team": "POR",
+  "away_team": "MIN",
+  "home_predicted_score": 140.3,
+  "away_predicted_score": 151.3,
+  "player_predictions": [
+    {
+      "name": "Jrue Holiday",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201950.png",
+      "stats": {
+        "points": 12.1,
+        "rebounds": 4.4,
+        "assists": 4.6,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.4",
+        "ft": "76.3"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Damian Lillard",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203081.png",
+      "stats": {
+        "points": 23.5,
+        "rebounds": 3.5,
+        "assists": 5.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "78.9"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Jerami Grant",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203924.png",
+      "stats": {
+        "points": 17.5,
+        "rebounds": 5.6,
+        "assists": 1.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.6",
+        "ft": "78.3"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Matisse Thybulle",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629680.png",
+      "stats": {
+        "points": 7.4,
+        "rebounds": 2.9,
+        "assists": 2.0,
+        "steals": 0.1,
+        "blocks": 0.3,
+        "fg": "46.6",
+        "threePt": "36.4",
+        "ft": "72.6"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Deni Avdija",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630166.png",
+      "stats": {
+        "points": 29.2,
+        "rebounds": 9.2,
+        "assists": 5.8,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.4",
+        "ft": "78.5"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Blake Wesley",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631104.png",
+      "stats": {
+        "points": 5.3,
+        "rebounds": 1.8,
+        "assists": 3.7,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.2",
+        "threePt": "0.0",
+        "ft": "74.8"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Shaedon Sharpe",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631101.png",
+      "stats": {
+        "points": 22.1,
+        "rebounds": 5.4,
+        "assists": 3.8,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.6"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Scoot Henderson",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630703.png",
+      "stats": {
+        "points": 12.7,
+        "rebounds": 3.5,
+        "assists": 5.1,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "77.8"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Rayan Rupert",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1641712.png",
+      "stats": {
+        "points": 7.5,
+        "rebounds": 2.4,
+        "assists": 2.3,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "36.1",
+        "ft": "69.7"
+      },
+      "team": "POR",
+      "is_home": true
+    },
+    {
+      "name": "Mike Conley",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201144.png",
+      "stats": {
+        "points": 7.9,
+        "rebounds": 3.0,
+        "assists": 4.9,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "34.6",
+        "ft": "74.6"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Rudy Gobert",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203497.png",
+      "stats": {
+        "points": 20.6,
+        "rebounds": 14.4,
+        "assists": 1.4,
+        "steals": 0.4,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "0.0",
+        "ft": "78.6"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Joe Ingles",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/204060.png",
+      "stats": {
+        "points": 3.0,
+        "rebounds": 3.4,
+        "assists": 1.8,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "45.6",
+        "threePt": "28.8",
+        "ft": "26.7"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Julius Randle",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203944.png",
+      "stats": {
+        "points": 18.2,
+        "rebounds": 10.1,
+        "assists": 5.3,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "74.8"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Donte DiVincenzo",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628978.png",
+      "stats": {
+        "points": 14.8,
+        "rebounds": 4.1,
+        "assists": 3.0,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.7",
+        "ft": "16.0"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Naz Reid",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629675.png",
+      "stats": {
+        "points": 13.7,
+        "rebounds": 6.1,
+        "assists": 1.9,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "35.6",
+        "ft": "76.6"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Jaden McDaniels",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630183.png",
+      "stats": {
+        "points": 10.5,
+        "rebounds": 3.0,
+        "assists": 0.9,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "35.6",
+        "ft": "74.5"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Anthony Edwards",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630162.png",
+      "stats": {
+        "points": 31.9,
+        "rebounds": 7.6,
+        "assists": 4.3,
+        "steals": 0.0,
+        "blocks": 0.3,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "78.5"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Bones Hyland",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630538.png",
+      "stats": {
+        "points": 10.1,
+        "rebounds": 2.0,
+        "assists": 3.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.2",
+        "ft": "73.8"
+      },
+      "team": "MIN",
+      "is_home": false
+    },
+    {
+      "name": "Johnny Juzang",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630548.png",
+      "stats": {
+        "points": 17.6,
+        "rebounds": 2.5,
+        "assists": 1.2,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.7",
+        "ft": "74.5"
+      },
+      "team": "MIN",
+      "is_home": false
+    }
+  ]
+}

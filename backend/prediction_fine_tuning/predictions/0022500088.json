@@ -1,0 +1,181 @@
+{
+  "game_id": "0022500088",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T10:41:17.145948",
+  "home_team": "PHX",
+  "away_team": "SAC",
+  "home_predicted_score": 104,
+  "away_predicted_score": 104,
+  "player_predictions": [
+    {
+      "name": "Russell Westbrook",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201566.png",
+      "stats": {
+        "points": 16.6,
+        "rebounds": 5.3,
+        "assists": 5.6,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "33.3",
+        "ft": "77.8"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "DeMar DeRozan",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201942.png",
+      "stats": {
+        "points": 23.1,
+        "rebounds": 5.2,
+        "assists": 4.4,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "34.7",
+        "ft": "78.2"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Dennis Schr\u00f6der",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203471.png",
+      "stats": {
+        "points": 12.4,
+        "rebounds": 3.1,
+        "assists": 5.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "35.6",
+        "ft": "78.0"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Doug McDermott",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203926.png",
+      "stats": {
+        "points": 7.0,
+        "rebounds": 3.1,
+        "assists": 0.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.2",
+        "threePt": "36.3",
+        "ft": "16.0"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Zach LaVine",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203897.png",
+      "stats": {
+        "points": 28.7,
+        "rebounds": 5.4,
+        "assists": 4.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "76.7"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Dario \u0160ari\u0107",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203967.png",
+      "stats": {
+        "points": 4.1,
+        "rebounds": 6.9,
+        "assists": 1.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.1",
+        "threePt": "35.3",
+        "ft": "67.5"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Domantas Sabonis",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627734.png",
+      "stats": {
+        "points": 17.6,
+        "rebounds": 13.0,
+        "assists": 4.2,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "35.1",
+        "ft": "74.6"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Malik Monk",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628370.png",
+      "stats": {
+        "points": 12.5,
+        "rebounds": 3.2,
+        "assists": 3.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.2",
+        "ft": "76.7"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Drew Eubanks",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629234.png",
+      "stats": {
+        "points": 3.6,
+        "rebounds": 4.0,
+        "assists": 0.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "45.8",
+        "threePt": "0.0",
+        "ft": "67.7"
+      },
+      "team": "SAC",
+      "is_home": false
+    },
+    {
+      "name": "Keegan Murray",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631099.png",
+      "stats": {
+        "points": 9.5,
+        "rebounds": 7.4,
+        "assists": 1.5,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.3",
+        "ft": "68.4"
+      },
+      "team": "SAC",
+      "is_home": false
+    }
+  ]
+}

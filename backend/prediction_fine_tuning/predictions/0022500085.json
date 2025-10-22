@@ -1,0 +1,232 @@
+{
+  "game_id": "0022500085",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:00:20.900787",
+  "home_team": "MEM",
+  "away_team": "NOP",
+  "home_predicted_score": 112.1,
+  "away_predicted_score": 105.9,
+  "player_predictions": [
+    {
+      "name": "Kentavious Caldwell-Pope",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203484.png",
+      "stats": {
+        "points": 7.5,
+        "rebounds": 3.1,
+        "assists": 1.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.2",
+        "ft": "72.8"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "Ty Jerome",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629660.png",
+      "stats": {
+        "points": 15.2,
+        "rebounds": 2.2,
+        "assists": 4.3,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "76.3"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "Ja Morant",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629630.png",
+      "stats": {
+        "points": 29.4,
+        "rebounds": 5.9,
+        "assists": 7.5,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.4",
+        "ft": "78.7"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "Brandon Clarke",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629634.png",
+      "stats": {
+        "points": 13.2,
+        "rebounds": 9.6,
+        "assists": 1.8,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "7.9",
+        "ft": "76.1"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "John Konchar",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629723.png",
+      "stats": {
+        "points": 5.1,
+        "rebounds": 6.1,
+        "assists": 0.9,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.0",
+        "threePt": "35.9",
+        "ft": "48.0"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "Santi Aldama",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630583.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 5.5,
+        "assists": 2.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "36.5",
+        "ft": "65.8"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "Jock Landale",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629111.png",
+      "stats": {
+        "points": 12.2,
+        "rebounds": 5.0,
+        "assists": 2.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "35.6",
+        "ft": "72.9"
+      },
+      "team": "MEM",
+      "is_home": true
+    },
+    {
+      "name": "Kevon Looney",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626172.png",
+      "stats": {
+        "points": 4.3,
+        "rebounds": 6.4,
+        "assists": 1.9,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.0",
+        "threePt": "0.0",
+        "ft": "65.8"
+      },
+      "team": "NOP",
+      "is_home": false
+    },
+    {
+      "name": "Dejounte Murray",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627749.png",
+      "stats": {
+        "points": 15.2,
+        "rebounds": 6.7,
+        "assists": 6.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "35.8",
+        "ft": "78.7"
+      },
+      "team": "NOP",
+      "is_home": false
+    },
+    {
+      "name": "Zion Williamson",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629627.png",
+      "stats": {
+        "points": 26.2,
+        "rebounds": 6.3,
+        "assists": 5.3,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.8",
+        "threePt": "0.0",
+        "ft": "78.9"
+      },
+      "team": "NOP",
+      "is_home": false
+    },
+    {
+      "name": "Jordan Poole",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629673.png",
+      "stats": {
+        "points": 21.1,
+        "rebounds": 2.6,
+        "assists": 2.9,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.5"
+      },
+      "team": "NOP",
+      "is_home": false
+    },
+    {
+      "name": "Saddiq Bey",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630180.png",
+      "stats": {
+        "points": 13.3,
+        "rebounds": 4.7,
+        "assists": 1.3,
+        "steals": 0.1,
+        "blocks": 0.3,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "78.5"
+      },
+      "team": "NOP",
+      "is_home": false
+    },
+    {
+      "name": "Herbert Jones",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630529.png",
+      "stats": {
+        "points": 7.6,
+        "rebounds": 3.9,
+        "assists": 2.2,
+        "steals": 1.0,
+        "blocks": 0.3,
+        "fg": "46.3",
+        "threePt": "36.2",
+        "ft": "67.5"
+      },
+      "team": "NOP",
+      "is_home": false
+    }
+  ]
+}

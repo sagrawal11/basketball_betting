@@ -7,22 +7,22 @@ interface HistoricalGameCardProps {
   homeTeam: {
     name: string;
     logo: string;
-    predictedScore: number;
+    predictedScore: number | null;
     actualScore: number;
   };
   awayTeam: {
     name: string;
     logo: string;
-    predictedScore: number;
+    predictedScore: number | null;
     actualScore: number;
   };
   time: string;
   date: string;
   location: string;
   accuracy: {
-    scoreAccuracy: number; // percentage
-    playerStatsAccuracy: number; // percentage
-    avgPointsDiff: number;
+    scoreAccuracy: number | null; // percentage
+    playerStatsAccuracy: number | null; // percentage
+    avgPointsDiff: number | null;
   };
 }
 
@@ -72,19 +72,23 @@ const HistoricalGameCard = ({
             
             {/* Scores */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-muted-foreground">Pred: {awayTeam.predictedScore}</span>
+              <span className="text-muted-foreground">
+                Pred: {awayTeam.predictedScore !== null ? awayTeam.predictedScore : 'N/A'}
+              </span>
               <span className="text-foreground font-bold">Act: {awayTeam.actualScore}</span>
             </div>
             <div className="text-[10px] text-muted-foreground">
-              {awayTeam.predictedScore > awayTeam.actualScore ? (
+              {awayTeam.predictedScore === null ? (
+                <span className="text-muted-foreground italic">No prediction</span>
+              ) : awayTeam.predictedScore > awayTeam.actualScore ? (
                 <span className="flex items-center gap-1">
                   <TrendingDown className="w-3 h-3" />
-                  Off by {Math.abs(awayTeam.predictedScore - awayTeam.actualScore)}
+                  Off by {Math.abs(awayTeam.predictedScore - awayTeam.actualScore).toFixed(1)}
                 </span>
               ) : awayTeam.predictedScore < awayTeam.actualScore ? (
                 <span className="flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
-                  Off by {Math.abs(awayTeam.predictedScore - awayTeam.actualScore)}
+                  Off by {Math.abs(awayTeam.predictedScore - awayTeam.actualScore).toFixed(1)}
                 </span>
               ) : (
                 <span className="text-primary">Perfect!</span>
@@ -111,19 +115,23 @@ const HistoricalGameCard = ({
             
             {/* Scores */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-muted-foreground">Pred: {homeTeam.predictedScore}</span>
+              <span className="text-muted-foreground">
+                Pred: {homeTeam.predictedScore !== null ? homeTeam.predictedScore : 'N/A'}
+              </span>
               <span className="text-foreground font-bold">Act: {homeTeam.actualScore}</span>
             </div>
             <div className="text-[10px] text-muted-foreground">
-              {homeTeam.predictedScore > homeTeam.actualScore ? (
+              {homeTeam.predictedScore === null ? (
+                <span className="text-muted-foreground italic">No prediction</span>
+              ) : homeTeam.predictedScore > homeTeam.actualScore ? (
                 <span className="flex items-center gap-1">
                   <TrendingDown className="w-3 h-3" />
-                  Off by {Math.abs(homeTeam.predictedScore - homeTeam.actualScore)}
+                  Off by {Math.abs(homeTeam.predictedScore - homeTeam.actualScore).toFixed(1)}
                 </span>
               ) : homeTeam.predictedScore < homeTeam.actualScore ? (
                 <span className="flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
-                  Off by {Math.abs(homeTeam.predictedScore - homeTeam.actualScore)}
+                  Off by {Math.abs(homeTeam.predictedScore - homeTeam.actualScore).toFixed(1)}
                 </span>
               ) : (
                 <span className="text-primary">Perfect!</span>
@@ -133,24 +141,20 @@ const HistoricalGameCard = ({
         </div>
 
         {/* Accuracy Metrics */}
-        <div className="grid grid-cols-3 gap-2 mb-3 pt-3 border-t border-border/50">
+        <div className="grid grid-cols-2 gap-3 mb-3 pt-3 border-t border-border/50">
           <div className="text-center">
-            <div className={`text-sm font-bold ${getAccuracyColor(accuracy.scoreAccuracy)}`}>
-              {accuracy.scoreAccuracy}%
+            <div className={`text-lg font-bold ${accuracy.scoreAccuracy !== null ? getAccuracyColor(accuracy.scoreAccuracy) : 'text-muted-foreground'}`}>
+              {accuracy.scoreAccuracy !== null ? `${accuracy.scoreAccuracy.toFixed(1)}%` : 'Pending'}
             </div>
-            <div className="text-[10px] text-muted-foreground">Score Accuracy</div>
+            <div className="text-[10px] text-muted-foreground">Overall Accuracy</div>
+            <div className="text-[9px] text-muted-foreground/60">Score + Stats Combined</div>
           </div>
           <div className="text-center">
-            <div className={`text-sm font-bold ${getAccuracyColor(accuracy.playerStatsAccuracy)}`}>
-              {accuracy.playerStatsAccuracy}%
+            <div className="text-lg font-bold text-muted-foreground">
+              {accuracy.avgPointsDiff !== null ? `±${accuracy.avgPointsDiff.toFixed(1)}` : 'Pending'}
             </div>
-            <div className="text-[10px] text-muted-foreground">Player Stats</div>
-          </div>
-          <div className="text-center">
-            <div className="text-sm font-bold text-muted-foreground">
-              ±{accuracy.avgPointsDiff.toFixed(1)}
-            </div>
-            <div className="text-[10px] text-muted-foreground">Avg Diff</div>
+            <div className="text-[10px] text-muted-foreground">Avg Points Diff</div>
+            <div className="text-[9px] text-muted-foreground/60">Per Player</div>
           </div>
         </div>
 

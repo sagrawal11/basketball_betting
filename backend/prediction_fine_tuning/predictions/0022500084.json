@@ -1,0 +1,351 @@
+{
+  "game_id": "0022500084",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:00:19.099402",
+  "home_team": "CHI",
+  "away_team": "DET",
+  "home_predicted_score": 117.3,
+  "away_predicted_score": 129.8,
+  "player_predictions": [
+    {
+      "name": "Nikola Vu\u010devi\u0107",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202696.png",
+      "stats": {
+        "points": 14.8,
+        "rebounds": 10.7,
+        "assists": 3.6,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "35.5",
+        "ft": "74.3"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Zach Collins",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628380.png",
+      "stats": {
+        "points": 5.3,
+        "rebounds": 5.2,
+        "assists": 2.4,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "31.7",
+        "ft": "62.2"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Jevon Carter",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628975.png",
+      "stats": {
+        "points": 3.9,
+        "rebounds": 2.1,
+        "assists": 1.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "0.0"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Kevin Huerter",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628989.png",
+      "stats": {
+        "points": 14.4,
+        "rebounds": 3.0,
+        "assists": 3.8,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "65.1"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Coby White",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629632.png",
+      "stats": {
+        "points": 14.2,
+        "rebounds": 3.1,
+        "assists": 4.5,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.3",
+        "ft": "78.1"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Jalen Smith",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630188.png",
+      "stats": {
+        "points": 7.4,
+        "rebounds": 7.2,
+        "assists": 0.7,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "35.5",
+        "ft": "77.1"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Tre Jones",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630200.png",
+      "stats": {
+        "points": 16.1,
+        "rebounds": 4.7,
+        "assists": 8.9,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.7",
+        "threePt": "32.5",
+        "ft": "77.3"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Isaac Okoro",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630171.png",
+      "stats": {
+        "points": 8.9,
+        "rebounds": 4.0,
+        "assists": 0.8,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.3",
+        "ft": "70.6"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Patrick Williams",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630172.png",
+      "stats": {
+        "points": 9.0,
+        "rebounds": 5.9,
+        "assists": 2.2,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.1",
+        "ft": "74.1"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Josh Giddey",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630581.png",
+      "stats": {
+        "points": 20.3,
+        "rebounds": 7.3,
+        "assists": 7.9,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.0",
+        "ft": "77.9"
+      },
+      "team": "CHI",
+      "is_home": true
+    },
+    {
+      "name": "Tobias Harris",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202699.png",
+      "stats": {
+        "points": 13.2,
+        "rebounds": 5.3,
+        "assists": 2.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.4",
+        "ft": "76.3"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Caris LeVert",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627747.png",
+      "stats": {
+        "points": 12.6,
+        "rebounds": 4.0,
+        "assists": 3.6,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "78.3"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Duncan Robinson",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629130.png",
+      "stats": {
+        "points": 11.8,
+        "rebounds": 2.2,
+        "assists": 2.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.7",
+        "ft": "66.7"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Javonte Green",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629750.png",
+      "stats": {
+        "points": 3.0,
+        "rebounds": 2.6,
+        "assists": 1.1,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.1",
+        "threePt": "22.9",
+        "ft": "67.5"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Paul Reed",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630194.png",
+      "stats": {
+        "points": 6.3,
+        "rebounds": 6.6,
+        "assists": 1.7,
+        "steals": 0.0,
+        "blocks": 0.3,
+        "fg": "46.5",
+        "threePt": "0.0",
+        "ft": "0.0"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Isaiah Stewart",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630191.png",
+      "stats": {
+        "points": 8.7,
+        "rebounds": 8.7,
+        "assists": 2.9,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "28.8",
+        "ft": "73.6"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Cade Cunningham",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630595.png",
+      "stats": {
+        "points": 27.6,
+        "rebounds": 6.1,
+        "assists": 7.3,
+        "steals": 0.0,
+        "blocks": 0.4,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "78.5"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Jalen Duren",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631105.png",
+      "stats": {
+        "points": 16.5,
+        "rebounds": 11.3,
+        "assists": 3.0,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "0.0",
+        "ft": "73.3"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Jaden Ivey",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631093.png",
+      "stats": {
+        "points": 18.7,
+        "rebounds": 3.4,
+        "assists": 3.1,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.3",
+        "ft": "77.3"
+      },
+      "team": "DET",
+      "is_home": false
+    },
+    {
+      "name": "Colby Jones",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1641732.png",
+      "stats": {
+        "points": 8.4,
+        "rebounds": 2.3,
+        "assists": 1.0,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "16.6",
+        "ft": "77.0"
+      },
+      "team": "DET",
+      "is_home": false
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "game_id": "0022500086",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:00:23.286487",
+  "home_team": "MIL",
+  "away_team": "WAS",
+  "home_predicted_score": 115.4,
+  "away_predicted_score": 92.8,
+  "player_predictions": [
+    {
+      "name": "Giannis Antetokounmpo",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203507.png",
+      "stats": {
+        "points": 28.1,
+        "rebounds": 9.6,
+        "assists": 8.6,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "34.0",
+        "ft": "79.1"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Gary Harris",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203914.png",
+      "stats": {
+        "points": 8.0,
+        "rebounds": 2.3,
+        "assists": 0.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "36.4",
+        "ft": "56.3"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Myles Turner",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626167.png",
+      "stats": {
+        "points": 16.6,
+        "rebounds": 7.7,
+        "assists": 1.4,
+        "steals": 0.1,
+        "blocks": 0.2,
+        "fg": "46.7",
+        "threePt": "35.8",
+        "ft": "78.5"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Bobby Portis",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626171.png",
+      "stats": {
+        "points": 17.6,
+        "rebounds": 9.9,
+        "assists": 1.4,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.0",
+        "ft": "77.5"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Taurean Prince",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627752.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 4.7,
+        "assists": 1.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.4",
+        "ft": "68.8"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Kyle Kuzma",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628398.png",
+      "stats": {
+        "points": 15.1,
+        "rebounds": 8.0,
+        "assists": 2.0,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "75.6"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Amir Coffey",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629599.png",
+      "stats": {
+        "points": 10.8,
+        "rebounds": 2.4,
+        "assists": 0.9,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "35.6",
+        "ft": "75.8"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Thanasis Antetokounmpo",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203648.png",
+      "stats": {
+        "points": 6.0,
+        "rebounds": 3.0,
+        "assists": 3.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.2",
+        "threePt": "0.0",
+        "ft": "0.0"
+      },
+      "team": "MIL",
+      "is_home": true
+    },
+    {
+      "name": "Khris Middleton",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203114.png",
+      "stats": {
+        "points": 9.4,
+        "rebounds": 4.6,
+        "assists": 2.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "35.8",
+        "ft": "76.8"
+      },
+      "team": "WAS",
+      "is_home": false
+    },
+    {
+      "name": "CJ McCollum",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203468.png",
+      "stats": {
+        "points": 20.6,
+        "rebounds": 2.4,
+        "assists": 5.4,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "74.6"
+      },
+      "team": "WAS",
+      "is_home": false
+    },
+    {
+      "name": "Anthony Gill",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630264.png",
+      "stats": {
+        "points": 4.9,
+        "rebounds": 3.4,
+        "assists": 0.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.0",
+        "threePt": "0.0",
+        "ft": "72.0"
+      },
+      "team": "WAS",
+      "is_home": false
+    },
+    {
+      "name": "Justin Champagnie",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630551.png",
+      "stats": {
+        "points": 21.7,
+        "rebounds": 7.4,
+        "assists": 1.1,
+        "steals": 0.6,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.6",
+        "ft": "75.8"
+      },
+      "team": "WAS",
+      "is_home": false
+    },
+    {
+      "name": "Corey Kispert",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630557.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 2.5,
+        "assists": 1.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "36.3",
+        "ft": "77.4"
+      },
+      "team": "WAS",
+      "is_home": false
+    },
+    {
+      "name": "Malaki Branham",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631103.png",
+      "stats": {
+        "points": 13.6,
+        "rebounds": 2.4,
+        "assists": 1.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "35.9",
+        "ft": "76.2"
+      },
+      "team": "WAS",
+      "is_home": false
+    },
+    {
+      "name": "Bilal Coulibaly",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1641731.png",
+      "stats": {
+        "points": 9.4,
+        "rebounds": 5.7,
+        "assists": 2.2,
+        "steals": 0.1,
+        "blocks": 0.2,
+        "fg": "46.6",
+        "threePt": "35.9",
+        "ft": "76.2"
+      },
+      "team": "WAS",
+      "is_home": false
+    }
+  ]
+}

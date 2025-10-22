@@ -1,0 +1,283 @@
+{
+  "game_id": "0022500087",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:00:26.402302",
+  "home_team": "UTA",
+  "away_team": "LAC",
+  "home_predicted_score": 104.7,
+  "away_predicted_score": 181.9,
+  "player_predictions": [
+    {
+      "name": "Kevin Love",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201567.png",
+      "stats": {
+        "points": 12.6,
+        "rebounds": 9.7,
+        "assists": 1.2,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "35.9",
+        "ft": "76.6"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Kyle Anderson",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203937.png",
+      "stats": {
+        "points": 9.6,
+        "rebounds": 6.8,
+        "assists": 4.0,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "0.0",
+        "ft": "72.7"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Jusuf Nurki\u0107",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203994.png",
+      "stats": {
+        "points": 17.9,
+        "rebounds": 11.1,
+        "assists": 3.2,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.1",
+        "ft": "76.9"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Georges Niang",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627777.png",
+      "stats": {
+        "points": 9.8,
+        "rebounds": 3.3,
+        "assists": 0.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.6",
+        "ft": "0.0"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Lauri Markkanen",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628374.png",
+      "stats": {
+        "points": 16.5,
+        "rebounds": 8.3,
+        "assists": 0.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "74.4"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Svi Mykhailiuk",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629004.png",
+      "stats": {
+        "points": 16.4,
+        "rebounds": 3.9,
+        "assists": 3.0,
+        "steals": 0.6,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "69.7"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Walker Kessler",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631117.png",
+      "stats": {
+        "points": 3.9,
+        "rebounds": 9.0,
+        "assists": 1.4,
+        "steals": 0.1,
+        "blocks": 0.7,
+        "fg": "46.5",
+        "threePt": "30.1",
+        "ft": "74.9"
+      },
+      "team": "UTA",
+      "is_home": true
+    },
+    {
+      "name": "Chris Paul",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/101108.png",
+      "stats": {
+        "points": 11.4,
+        "rebounds": 5.6,
+        "assists": 5.0,
+        "steals": 0.2,
+        "blocks": 0.4,
+        "fg": "46.7",
+        "threePt": "35.7",
+        "ft": "76.8"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Brook Lopez",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201572.png",
+      "stats": {
+        "points": 13.1,
+        "rebounds": 8.4,
+        "assists": 1.6,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "75.8"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Nicolas Batum",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201587.png",
+      "stats": {
+        "points": 9.3,
+        "rebounds": 4.4,
+        "assists": 1.1,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.5",
+        "ft": "65.8"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "James Harden",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201935.png",
+      "stats": {
+        "points": 31.9,
+        "rebounds": 7.0,
+        "assists": 11.2,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "79.1"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Kawhi Leonard",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202695.png",
+      "stats": {
+        "points": 26.7,
+        "rebounds": 8.4,
+        "assists": 4.4,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.3",
+        "ft": "78.0"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Bradley Beal",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203078.png",
+      "stats": {
+        "points": 18.9,
+        "rebounds": 4.1,
+        "assists": 4.5,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "76.7"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Kris Dunn",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627739.png",
+      "stats": {
+        "points": 10.6,
+        "rebounds": 3.7,
+        "assists": 3.1,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.0",
+        "ft": "42.4"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Ivica Zubac",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627826.png",
+      "stats": {
+        "points": 16.5,
+        "rebounds": 10.6,
+        "assists": 2.2,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "0.0",
+        "ft": "76.4"
+      },
+      "team": "LAC",
+      "is_home": false
+    },
+    {
+      "name": "Bogdan Bogdanovi\u0107",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203992.png",
+      "stats": {
+        "points": 12.2,
+        "rebounds": 3.3,
+        "assists": 2.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "72.0"
+      },
+      "team": "LAC",
+      "is_home": false
+    }
+  ]
+}

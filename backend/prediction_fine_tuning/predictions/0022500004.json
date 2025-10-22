@@ -1,0 +1,283 @@
+{
+  "game_id": "0022500004",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:00:28.465964",
+  "home_team": "DAL",
+  "away_team": "SAS",
+  "home_predicted_score": 112.2,
+  "away_predicted_score": 90.6,
+  "player_predictions": [
+    {
+      "name": "Kyrie Irving",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202681.png",
+      "stats": {
+        "points": 23.6,
+        "rebounds": 3.9,
+        "assists": 3.9,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.8",
+        "threePt": "36.4",
+        "ft": "78.3"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Klay Thompson",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202691.png",
+      "stats": {
+        "points": 12.4,
+        "rebounds": 2.7,
+        "assists": 1.3,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "60.0"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Anthony Davis",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203076.png",
+      "stats": {
+        "points": 26.8,
+        "rebounds": 12.4,
+        "assists": 4.4,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "35.2",
+        "ft": "78.8"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Dwight Powell",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203939.png",
+      "stats": {
+        "points": 5.6,
+        "rebounds": 5.7,
+        "assists": 0.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "45.5",
+        "threePt": "7.9",
+        "ft": "71.4"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Dant\u00e9 Exum",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203957.png",
+      "stats": {
+        "points": 4.5,
+        "rebounds": 2.1,
+        "assists": 2.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "35.9",
+        "ft": "68.8"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Caleb Martin",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628997.png",
+      "stats": {
+        "points": 10.9,
+        "rebounds": 4.1,
+        "assists": 1.9,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "35.7",
+        "ft": "68.4"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Daniel Gafford",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629655.png",
+      "stats": {
+        "points": 11.2,
+        "rebounds": 7.6,
+        "assists": 0.9,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "0.0",
+        "ft": "77.8"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Naji Marshall",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630230.png",
+      "stats": {
+        "points": 14.2,
+        "rebounds": 4.2,
+        "assists": 5.0,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "77.5"
+      },
+      "team": "DAL",
+      "is_home": true
+    },
+    {
+      "name": "Bismack Biyombo",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202687.png",
+      "stats": {
+        "points": 4.7,
+        "rebounds": 8.4,
+        "assists": 0.4,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "0.0",
+        "ft": "54.4"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Harrison Barnes",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203084.png",
+      "stats": {
+        "points": 12.8,
+        "rebounds": 5.5,
+        "assists": 0.7,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "76.8"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Kelly Olynyk",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203482.png",
+      "stats": {
+        "points": 13.1,
+        "rebounds": 5.3,
+        "assists": 3.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "35.3",
+        "ft": "78.7"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Luke Kornet",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628436.png",
+      "stats": {
+        "points": 11.8,
+        "rebounds": 5.1,
+        "assists": 1.3,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "21.3",
+        "ft": "75.3"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Jordan McLaughlin",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629162.png",
+      "stats": {
+        "points": 5.5,
+        "rebounds": 2.5,
+        "assists": 3.4,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "45.2",
+        "threePt": "35.6",
+        "ft": "8.9"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Keldon Johnson",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629640.png",
+      "stats": {
+        "points": 17.3,
+        "rebounds": 6.9,
+        "assists": 2.1,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "35.6",
+        "ft": "75.6"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Devin Vassell",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630170.png",
+      "stats": {
+        "points": 14.1,
+        "rebounds": 3.1,
+        "assists": 2.6,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "71.4"
+      },
+      "team": "SAS",
+      "is_home": false
+    },
+    {
+      "name": "Jeremy Sochan",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631110.png",
+      "stats": {
+        "points": 8.3,
+        "rebounds": 6.7,
+        "assists": 2.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "33.6",
+        "ft": "75.7"
+      },
+      "team": "SAS",
+      "is_home": false
+    }
+  ]
+}

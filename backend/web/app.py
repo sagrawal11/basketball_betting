@@ -18,6 +18,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from models.prediction_engine import NBAGamePredictor
 from models.betting_recommender import BettingRecommender
 
+# Add prediction storage
+sys.path.insert(0, str(Path(__file__).parent.parent / "prediction_fine_tuning"))
+from prediction_storage import PredictionStorage
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'nba-betting-secret-key-change-in-production'
 
@@ -29,9 +33,11 @@ backend_dir = Path(__file__).parent.parent
 data_dir = backend_dir / "data"
 models_dir = data_dir / "player_data"
 
-# Initialize prediction engine and recommender with absolute paths
+# Initialize prediction engine, recommender, and storage with absolute paths
 predictor = NBAGamePredictor(data_dir=str(data_dir), models_dir=str(models_dir))
 recommender = BettingRecommender()
+predictions_dir = backend_dir / "prediction_fine_tuning" / "predictions"
+storage = PredictionStorage(storage_dir=str(predictions_dir))
 
 
 @app.route('/')
@@ -285,6 +291,27 @@ def get_game_players(game_id):
             home_final = 104
             away_final = 104
         
+        # Round all player stats to 1 decimal place
+        for player in players_with_predictions:
+            if 'stats' in player:
+                for stat_key in player['stats']:
+                    if isinstance(player['stats'][stat_key], (int, float)):
+                        player['stats'][stat_key] = round(player['stats'][stat_key], 1)
+        
+        # Save predictions for historical comparison
+        try:
+            storage.save_game_prediction(
+                game_id=game_id,
+                game_date=today.strftime('%Y-%m-%d'),
+                home_team=home_abbrev,
+                away_team=away_abbrev,
+                home_predicted_score=round(home_final, 1),
+                away_predicted_score=round(away_final, 1),
+                player_predictions=players_with_predictions
+            )
+        except Exception as save_error:
+            print(f"⚠️  Could not save prediction: {save_error}")
+        
         # Format to match React expectations
         return jsonify({
             'success': True,
@@ -358,6 +385,201 @@ def get_prediction():
             
     except Exception as e:
         print(f"  ❌ Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/generate-all-predictions', methods=['POST'])
+def generate_all_predictions():
+    """Auto-generate predictions for ALL of today's games"""
+    try:
+        from nba_api.stats.endpoints import scoreboardv2
+        from nba_api.stats.static import teams as nba_teams
+        import pytz
+        
+        eastern = pytz.timezone('US/Eastern')
+        today = datetime.now(eastern)
+        date_str = today.strftime('%m/%d/%Y')
+        
+        print(f"🤖 Auto-generating predictions for all games on {date_str}")
+        
+        # Fetch today's games
+        scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
+        games_data = scoreboard.get_normalized_dict()
+        
+        all_teams = nba_teams.get_teams()
+        team_lookup = {team['id']: team for team in all_teams}
+        
+        generated_count = 0
+        skipped_count = 0
+        
+        if 'GameHeader' in games_data:
+            for game in games_data['GameHeader']:
+                game_id = game.get('GAME_ID')
+                home_team_id = game.get('HOME_TEAM_ID')
+                visitor_team_id = game.get('VISITOR_TEAM_ID')
+                
+                # Check if we already have predictions for this game
+                existing = storage.get_game_prediction(game_id)
+                if existing:
+                    print(f"  ⏭️  Skipping {game_id} (already have predictions)")
+                    skipped_count += 1
+                    continue
+                
+                # Get team abbreviations
+                home_team = team_lookup.get(home_team_id, {})
+                away_team = team_lookup.get(visitor_team_id, {})
+                home_abbrev = home_team.get('abbreviation', 'HOME')
+                away_abbrev = away_team.get('abbreviation', 'AWAY')
+                
+                print(f"  🔮 Generating: {away_abbrev} @ {home_abbrev} ({game_id})")
+                
+                # Generate predictions by calling the existing endpoint logic
+                # (We'll extract this to a helper function to avoid duplication)
+                try:
+                    # Make internal request to game players endpoint
+                    import requests
+                    response = requests.get(
+                        f'http://localhost:5001/api/game/{game_id}/players?home={home_abbrev}&away={away_abbrev}',
+                        timeout=30
+                    )
+                    if response.status_code == 200:
+                        generated_count += 1
+                        print(f"  ✅ Generated predictions for {game_id}")
+                    else:
+                        print(f"  ⚠️  Failed to generate for {game_id}")
+                except Exception as e:
+                    print(f"  ❌ Error generating {game_id}: {e}")
+        
+        return jsonify({
+            'success': True,
+            'generated': generated_count,
+            'skipped': skipped_count,
+            'total': generated_count + skipped_count
+        })
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/history/games')
+def get_historical_games():
+    """Get completed games with actual scores for history"""
+    try:
+        from nba_api.stats.endpoints import scoreboardv2, leaguegamefinder
+        import pytz
+        
+        # Get yesterday's games (Oct 21, 2025)
+        eastern = pytz.timezone('US/Eastern')
+        yesterday = datetime.now(eastern) - timedelta(days=1)
+        date_str = yesterday.strftime('%m/%d/%Y')
+        
+        print(f"📅 Fetching completed games for: {date_str}")
+        
+        # Fetch scoreboard for yesterday
+        scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
+        games_data = scoreboard.get_normalized_dict()
+        
+        # Get all NBA teams for ID lookup
+        from nba_api.stats.static import teams as nba_teams
+        all_teams = nba_teams.get_teams()
+        team_lookup = {team['id']: team for team in all_teams}
+        
+        historical_games = []
+        
+        # Parse games with actual scores
+        if 'GameHeader' in games_data:
+            for game in games_data['GameHeader']:
+                game_id = game.get('GAME_ID')
+                home_team_id = game.get('HOME_TEAM_ID')
+                visitor_team_id = game.get('VISITOR_TEAM_ID')
+                
+                home_team_data = team_lookup.get(home_team_id, {})
+                away_team_data = team_lookup.get(visitor_team_id, {})
+                
+                # Get actual scores from LineScore
+                home_score = 0
+                away_score = 0
+                
+                if 'LineScore' in games_data:
+                    for team in games_data['LineScore']:
+                        if team.get('GAME_ID') == game_id:
+                            if team.get('TEAM_ID') == home_team_id:
+                                home_score = team.get('PTS') or 0
+                            elif team.get('TEAM_ID') == visitor_team_id:
+                                away_score = team.get('PTS') or 0
+                
+                # Try to load saved predictions for this game
+                saved_prediction = storage.get_game_prediction(game_id)
+                home_pred_score = None
+                away_pred_score = None
+                score_accuracy = None
+                avg_points_diff = None
+                player_stats_accuracy = None
+                
+                if saved_prediction:
+                    home_pred_score = saved_prediction.get('home_predicted_score')
+                    away_pred_score = saved_prediction.get('away_predicted_score')
+                    
+                    # Use actual scores from saved prediction if available (more reliable than API)
+                    saved_home_actual = saved_prediction.get('home_actual_score')
+                    saved_away_actual = saved_prediction.get('away_actual_score')
+                    
+                    if saved_home_actual is not None and saved_home_actual > 0:
+                        home_score = saved_home_actual
+                    if saved_away_actual is not None and saved_away_actual > 0:
+                        away_score = saved_away_actual
+                    
+                    # Get pre-calculated accuracy from storage
+                    score_accuracy = saved_prediction.get('score_accuracy')
+                    player_stats_accuracy = saved_prediction.get('player_stats_accuracy')
+                    avg_points_diff = saved_prediction.get('avg_points_diff')
+                
+                historical_games.append({
+                    'id': game_id,
+                    'homeTeam': {
+                        'name': home_team_data.get('full_name', 'Home Team'),
+                        'abbrev': home_team_data.get('abbreviation', 'HOME'),
+                        'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg",
+                        'predictedScore': home_pred_score,
+                        'actualScore': home_score
+                    },
+                    'awayTeam': {
+                        'name': away_team_data.get('full_name', 'Away Team'),
+                        'abbrev': away_team_data.get('abbreviation', 'AWAY'),
+                        'logo': f"https://cdn.nba.com/logos/nba/{visitor_team_id}/global/L/logo.svg",
+                        'predictedScore': away_pred_score,
+                        'actualScore': away_score
+                    },
+                    'time': game.get('GAME_STATUS_TEXT', 'Final'),
+                    'date': yesterday.strftime('%B %d, %Y'),
+                    'location': 'NBA Arena',
+                    'accuracy': {
+                        'scoreAccuracy': score_accuracy,
+                        'playerStatsAccuracy': player_stats_accuracy,
+                        'avgPointsDiff': avg_points_diff
+                    }
+                })
+        
+        print(f"✅ Found {len(historical_games)} completed games")
+        
+        return jsonify({
+            'success': True,
+            'games': historical_games
+        })
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({

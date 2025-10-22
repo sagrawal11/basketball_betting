@@ -24,6 +24,8 @@ const Games = () => {
 
   useEffect(() => {
     fetchGames();
+    // Auto-generate predictions for all games
+    generateAllPredictions();
   }, []);
 
   const fetchGames = async () => {
@@ -38,10 +40,29 @@ const Games = () => {
         setError(data.error || 'Failed to load games');
       }
     } catch (err) {
-      setError('Failed to connect to API. Make sure Flask server is running on port 5000.');
+      setError('Failed to connect to API. Make sure Flask server is running on port 5001.');
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateAllPredictions = async () => {
+    try {
+      console.log('🤖 Auto-generating predictions for all games...');
+      const response = await fetch(`${API_BASE}/generate-all-predictions`, {
+        method: 'POST'
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log(`✅ Generated ${data.generated} predictions, skipped ${data.skipped}`);
+      } else {
+        console.warn('Failed to auto-generate predictions:', data.error);
+      }
+    } catch (err) {
+      console.warn('Failed to auto-generate predictions:', err);
+      // Don't show error to user - predictions will generate on click anyway
     }
   };
 

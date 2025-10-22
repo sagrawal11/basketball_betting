@@ -1,0 +1,317 @@
+{
+  "game_id": "0022500082",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T02:56:58.856662",
+  "home_team": "ATL",
+  "away_team": "TOR",
+  "home_predicted_score": 115.9,
+  "away_predicted_score": 134.6,
+  "player_predictions": [
+    {
+      "name": "Kristaps Porzi\u0146\u0123is",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/204001.png",
+      "stats": {
+        "points": 20.9,
+        "rebounds": 9.0,
+        "assists": 3.5,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "78.4"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Luke Kennard",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628379.png",
+      "stats": {
+        "points": 4.5,
+        "rebounds": 2.7,
+        "assists": 2.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "35.8",
+        "ft": "63.2"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Trae Young",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629027.png",
+      "stats": {
+        "points": 24.7,
+        "rebounds": 4.1,
+        "assists": 11.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.9"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Nickeil Alexander-Walker",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629638.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 2.9,
+        "assists": 3.9,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "76.1"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Onyeka Okongwu",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630168.png",
+      "stats": {
+        "points": 13.2,
+        "rebounds": 7.4,
+        "assists": 1.9,
+        "steals": 0.7,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "32.5",
+        "ft": "77.9"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Jalen Johnson",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630552.png",
+      "stats": {
+        "points": 10.5,
+        "rebounds": 10.6,
+        "assists": 4.2,
+        "steals": 0.4,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "13.0",
+        "ft": "77.2"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "V\u00edt Krej\u010d\u00ed",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630249.png",
+      "stats": {
+        "points": 8.1,
+        "rebounds": 3.4,
+        "assists": 2.9,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "36.0",
+        "ft": "75.9"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Caleb Houstan",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631216.png",
+      "stats": {
+        "points": 8.8,
+        "rebounds": 1.9,
+        "assists": 2.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.4",
+        "threePt": "36.5",
+        "ft": "0.0"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Dyson Daniels",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630700.png",
+      "stats": {
+        "points": 12.0,
+        "rebounds": 4.8,
+        "assists": 5.3,
+        "steals": 0.3,
+        "blocks": 0.4,
+        "fg": "46.7",
+        "threePt": "34.8",
+        "ft": "72.2"
+      },
+      "team": "ATL",
+      "is_home": true
+    },
+    {
+      "name": "Garrett Temple",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202066.png",
+      "stats": {
+        "points": 6.5,
+        "rebounds": 3.0,
+        "assists": 2.2,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "36.1",
+        "ft": "40.0"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Brandon Ingram",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627742.png",
+      "stats": {
+        "points": 20.4,
+        "rebounds": 5.5,
+        "assists": 4.7,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "78.3"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Jakob Poeltl",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627751.png",
+      "stats": {
+        "points": 14.4,
+        "rebounds": 10.2,
+        "assists": 2.0,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "0.0",
+        "ft": "74.1"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "RJ Barrett",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629628.png",
+      "stats": {
+        "points": 15.0,
+        "rebounds": 6.7,
+        "assists": 3.9,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "35.7",
+        "ft": "77.6"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Immanuel Quickley",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630193.png",
+      "stats": {
+        "points": 15.6,
+        "rebounds": 4.2,
+        "assists": 8.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "76.8"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Scottie Barnes",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630567.png",
+      "stats": {
+        "points": 22.9,
+        "rebounds": 9.4,
+        "assists": 4.6,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.8",
+        "threePt": "36.3",
+        "ft": "77.8"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Sandro Mamukelashvili",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630572.png",
+      "stats": {
+        "points": 13.0,
+        "rebounds": 5.5,
+        "assists": 2.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "35.9",
+        "ft": "68.1"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Ochai Agbaji",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630534.png",
+      "stats": {
+        "points": 15.2,
+        "rebounds": 4.0,
+        "assists": 1.5,
+        "steals": 0.4,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "61.2"
+      },
+      "team": "TOR",
+      "is_home": false
+    },
+    {
+      "name": "Gradey Dick",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1641711.png",
+      "stats": {
+        "points": 8.6,
+        "rebounds": 3.2,
+        "assists": 0.7,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.4",
+        "ft": "74.5"
+      },
+      "team": "TOR",
+      "is_home": false
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "game_id": "0022500080",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T02:56:51.886968",
+  "home_team": "CHA",
+  "away_team": "BKN",
+  "home_predicted_score": 123.3,
+  "away_predicted_score": 90.0,
+  "player_predictions": [
+    {
+      "name": "Mason Plumlee",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203486.png",
+      "stats": {
+        "points": 6.6,
+        "rebounds": 8.4,
+        "assists": 2.0,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "0.0",
+        "ft": "76.3"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Pat Connaughton",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626192.png",
+      "stats": {
+        "points": 13.0,
+        "rebounds": 4.9,
+        "assists": 2.4,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "76.0"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Collin Sexton",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629012.png",
+      "stats": {
+        "points": 24.1,
+        "rebounds": 2.4,
+        "assists": 4.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.2",
+        "ft": "78.4"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Miles Bridges",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628970.png",
+      "stats": {
+        "points": 17.4,
+        "rebounds": 6.1,
+        "assists": 2.9,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.2",
+        "ft": "76.9"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Grant Williams",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629684.png",
+      "stats": {
+        "points": 12.2,
+        "rebounds": 3.8,
+        "assists": 2.6,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.3",
+        "ft": "78.0"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "LaMelo Ball",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630163.png",
+      "stats": {
+        "points": 18.8,
+        "rebounds": 6.3,
+        "assists": 9.8,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "76.9"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Josh Green",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630182.png",
+      "stats": {
+        "points": 9.2,
+        "rebounds": 3.2,
+        "assists": 2.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.2",
+        "ft": "76.1"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Tre Mann",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630544.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 2.9,
+        "assists": 1.8,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.6",
+        "ft": "74.2"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Moussa Diabat\u00e9",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631217.png",
+      "stats": {
+        "points": 8.8,
+        "rebounds": 7.3,
+        "assists": 0.6,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "0.0",
+        "ft": "77.6"
+      },
+      "team": "CHA",
+      "is_home": true
+    },
+    {
+      "name": "Terance Mann",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629611.png",
+      "stats": {
+        "points": 12.4,
+        "rebounds": 5.0,
+        "assists": 2.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "35.4",
+        "ft": "70.3"
+      },
+      "team": "BKN",
+      "is_home": false
+    },
+    {
+      "name": "Nic Claxton",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629651.png",
+      "stats": {
+        "points": 10.4,
+        "rebounds": 8.1,
+        "assists": 2.0,
+        "steals": 0.5,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "0.0",
+        "ft": "69.8"
+      },
+      "team": "BKN",
+      "is_home": false
+    },
+    {
+      "name": "Haywood Highsmith",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629312.png",
+      "stats": {
+        "points": 8.7,
+        "rebounds": 4.0,
+        "assists": 1.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.4",
+        "ft": "77.5"
+      },
+      "team": "BKN",
+      "is_home": false
+    },
+    {
+      "name": "Ziaire Williams",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630533.png",
+      "stats": {
+        "points": 12.7,
+        "rebounds": 3.4,
+        "assists": 0.8,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.2",
+        "ft": "77.5"
+      },
+      "team": "BKN",
+      "is_home": false
+    },
+    {
+      "name": "Cam Thomas",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630560.png",
+      "stats": {
+        "points": 23.1,
+        "rebounds": 1.8,
+        "assists": 7.1,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.7"
+      },
+      "team": "BKN",
+      "is_home": false
+    },
+    {
+      "name": "Tyrese Martin",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631213.png",
+      "stats": {
+        "points": 10.0,
+        "rebounds": 4.4,
+        "assists": 3.9,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.5",
+        "threePt": "36.1",
+        "ft": "74.2"
+      },
+      "team": "BKN",
+      "is_home": false
+    },
+    {
+      "name": "Noah Clowney",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1641730.png",
+      "stats": {
+        "points": 9.7,
+        "rebounds": 3.9,
+        "assists": 0.9,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "36.4",
+        "ft": "76.6"
+      },
+      "team": "BKN",
+      "is_home": false
+    }
+  ]
+}

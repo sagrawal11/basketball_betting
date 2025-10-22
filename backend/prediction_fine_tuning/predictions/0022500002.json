@@ -1,0 +1,533 @@
+{
+  "game_id": "0022500002",
+  "game_date": "2025-10-21",
+  "timestamp": "2025-10-22T13:07:58.371000",
+  "home_team": "LAL",
+  "away_team": "GSW",
+  "home_predicted_score": 134.8,
+  "away_predicted_score": 90.3,
+  "player_predictions": [
+    {
+      "name": "LeBron James",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/2544.png",
+      "stats": {
+        "points": 24.9,
+        "rebounds": 6.2,
+        "assists": 6.1,
+        "steals": 0.5,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.0",
+        "ft": "78.3"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Marcus Smart",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203935.png",
+      "stats": {
+        "points": 7.3,
+        "rebounds": 4.7,
+        "assists": 2.5,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.3",
+        "ft": "75.8"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Maxi Kleber",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628467.png",
+      "stats": {
+        "points": 5.0,
+        "rebounds": 4.0,
+        "assists": 1.8,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.2",
+        "threePt": "35.9",
+        "ft": "69.2"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Jarred Vanderbilt",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629020.png",
+      "stats": {
+        "points": 5.3,
+        "rebounds": 7.4,
+        "assists": 0.6,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "7.9",
+        "ft": "73.4"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Deandre Ayton",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629028.png",
+      "stats": {
+        "points": 11.0,
+        "rebounds": 14.5,
+        "assists": 1.8,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "13.0",
+        "ft": "77.1"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Luka Don\u010di\u0107",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629029.png",
+      "stats": {
+        "points": 35.5,
+        "rebounds": 8.0,
+        "assists": 7.0,
+        "steals": 0.2,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "79.2"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Gabe Vincent",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629216.png",
+      "stats": {
+        "points": 3.9,
+        "rebounds": 1.5,
+        "assists": 2.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.1",
+        "threePt": "35.1",
+        "ft": "8.9"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Jaxson Hayes",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629637.png",
+      "stats": {
+        "points": 6.0,
+        "rebounds": 5.9,
+        "assists": 0.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "0.0",
+        "ft": "76.1"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Rui Hachimura",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629060.png",
+      "stats": {
+        "points": 16.4,
+        "rebounds": 4.3,
+        "assists": 1.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "77.3"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Austin Reaves",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630559.png",
+      "stats": {
+        "points": 16.5,
+        "rebounds": 4.2,
+        "assists": 6.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "78.4"
+      },
+      "team": "LAL",
+      "is_home": true
+    },
+    {
+      "name": "Al Horford",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201143.png",
+      "stats": {
+        "points": 11.7,
+        "rebounds": 8.4,
+        "assists": 2.3,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.4",
+        "ft": "66.9"
+      },
+      "team": "GSW",
+      "is_home": false
+    },
+    {
+      "name": "Stephen Curry",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201939.png",
+      "stats": {
+        "points": 22.2,
+        "rebounds": 5.6,
+        "assists": 5.4,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "78.3"
+      },
+      "team": "GSW",
+      "is_home": false
+    },
+    {
+      "name": "Draymond Green",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203110.png",
+      "stats": {
+        "points": 8.8,
+        "rebounds": 7.2,
+        "assists": 6.2,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.4",
+        "ft": "74.3"
+      },
+      "team": "GSW",
+      "is_home": false
+    },
+    {
+      "name": "Buddy Hield",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627741.png",
+      "stats": {
+        "points": 10.3,
+        "rebounds": 5.1,
+        "assists": 1.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.7",
+        "ft": "26.7"
+      },
+      "team": "GSW",
+      "is_home": false
+    },
+    {
+      "name": "Jonathan Kuminga",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630228.png",
+      "stats": {
+        "points": 12.9,
+        "rebounds": 4.2,
+        "assists": 2.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "35.5",
+        "ft": "77.0"
+      },
+      "team": "GSW",
+      "is_home": false
+    },
+    {
+      "name": "Moses Moody",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630541.png",
+      "stats": {
+        "points": 8.9,
+        "rebounds": 2.5,
+        "assists": 1.2,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.4",
+        "ft": "70.9"
+      },
+      "team": "GSW",
+      "is_home": false
+    },
+    {
+      "name": "Brandin Podziemski",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1641764.png",
+      "stats": {
+        "points": 12.5,
+        "rebounds": 6.5,
+        "assists": 5.9,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "40.0"
+      },
+      "team": "GSW",
+      "is_home": false
+    }
+  ],
+  "home_actual_score": 109,
+  "away_actual_score": 119,
+  "player_actual_stats": [
+    {
+      "player_name": "Austin Reaves",
+      "team": "LAL",
+      "points": 26,
+      "rebounds": 5,
+      "assists": 9,
+      "steals": 2,
+      "blocks": 0,
+      "fg_pct": 0.5625,
+      "fg3_pct": 0.2,
+      "ft_pct": 0.7,
+      "minutes": "PT36M20.00S"
+    },
+    {
+      "player_name": "Rui Hachimura",
+      "team": "LAL",
+      "points": 9,
+      "rebounds": 4,
+      "assists": 3,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.5,
+      "fg3_pct": 0.5,
+      "ft_pct": 0.0,
+      "minutes": "PT35M24.90S"
+    },
+    {
+      "player_name": "Deandre Ayton",
+      "team": "LAL",
+      "points": 10,
+      "rebounds": 6,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 1,
+      "fg_pct": 0.714285714285714,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT33M53.00S"
+    },
+    {
+      "player_name": "Gabe Vincent",
+      "team": "LAL",
+      "points": 3,
+      "rebounds": 0,
+      "assists": 1,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.25,
+      "fg3_pct": 0.25,
+      "ft_pct": 0.0,
+      "minutes": "PT28M44.00S"
+    },
+    {
+      "player_name": "Luka Don\u010di\u0107",
+      "team": "LAL",
+      "points": 43,
+      "rebounds": 12,
+      "assists": 9,
+      "steals": 2,
+      "blocks": 1,
+      "fg_pct": 0.62962962962963,
+      "fg3_pct": 0.2,
+      "ft_pct": 0.7,
+      "minutes": "PT40M59.00S"
+    },
+    {
+      "player_name": "Marcus Smart",
+      "team": "LAL",
+      "points": 9,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.5,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.75,
+      "minutes": "PT22M46.10S"
+    },
+    {
+      "player_name": "Jarred Vanderbilt",
+      "team": "LAL",
+      "points": 0,
+      "rebounds": 3,
+      "assists": 0,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT11M56.00S"
+    },
+    {
+      "player_name": "Jaxson Hayes",
+      "team": "LAL",
+      "points": 4,
+      "rebounds": 6,
+      "assists": 1,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.666666666666666,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT14M07.00S"
+    },
+    {
+      "player_name": "LeBron James",
+      "team": "LAL",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Maxi Kleber",
+      "team": "LAL",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Jonathan Kuminga",
+      "team": "GSW",
+      "points": 17,
+      "rebounds": 9,
+      "assists": 6,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.545454545454545,
+      "fg3_pct": 0.666666666666666,
+      "ft_pct": 0.5,
+      "minutes": "PT32M54.20S"
+    },
+    {
+      "player_name": "Draymond Green",
+      "team": "GSW",
+      "points": 8,
+      "rebounds": 7,
+      "assists": 9,
+      "steals": 1,
+      "blocks": 2,
+      "fg_pct": 0.5,
+      "fg3_pct": 0.333333333333333,
+      "ft_pct": 0.333333333333333,
+      "minutes": "PT28M24.20S"
+    },
+    {
+      "player_name": "Brandin Podziemski",
+      "team": "GSW",
+      "points": 7,
+      "rebounds": 7,
+      "assists": 2,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.428571428571429,
+      "fg3_pct": 0.25,
+      "ft_pct": 0.0,
+      "minutes": "PT32M31.80S"
+    },
+    {
+      "player_name": "Stephen Curry",
+      "team": "GSW",
+      "points": 23,
+      "rebounds": 1,
+      "assists": 4,
+      "steals": 3,
+      "blocks": 1,
+      "fg_pct": 0.428571428571429,
+      "fg3_pct": 0.333333333333333,
+      "ft_pct": 1.0,
+      "minutes": "PT32M04.00S"
+    },
+    {
+      "player_name": "Buddy Hield",
+      "team": "GSW",
+      "points": 17,
+      "rebounds": 1,
+      "assists": 0,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.545454545454545,
+      "fg3_pct": 0.5,
+      "ft_pct": 0.0,
+      "minutes": "PT22M15.00S"
+    },
+    {
+      "player_name": "Al Horford",
+      "team": "GSW",
+      "points": 5,
+      "rebounds": 5,
+      "assists": 1,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.28571428571428603,
+      "fg3_pct": 0.25,
+      "ft_pct": 0.0,
+      "minutes": "PT20M14.80S"
+    },
+    {
+      "player_name": "Moses Moody",
+      "team": "GSW",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    }
+  ],
+  "stat_accuracy": 55.7,
+  "score_accuracy": 55.7,
+  "avg_points_diff": 5.8,
+  "accuracy_breakdown": {
+    "team_score_accuracy": 76.10631408526713,
+    "player_points_accuracy": 61.48688197535473,
+    "other_stats_accuracy": 27.448885109599395
+  }
+}

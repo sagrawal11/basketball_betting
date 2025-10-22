@@ -1,0 +1,317 @@
+{
+  "game_id": "0022500003",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T13:24:39.718271",
+  "home_team": "NYK",
+  "away_team": "CLE",
+  "home_predicted_score": 166.6,
+  "away_predicted_score": 119.5,
+  "player_predictions": [
+    {
+      "name": "Jordan Clarkson",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203903.png",
+      "stats": {
+        "points": 15.3,
+        "rebounds": 3.4,
+        "assists": 2.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.3",
+        "ft": "78.1"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Karl-Anthony Towns",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626157.png",
+      "stats": {
+        "points": 25.9,
+        "rebounds": 14.1,
+        "assists": 3.3,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "35.0",
+        "ft": "78.9"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Josh Hart",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628404.png",
+      "stats": {
+        "points": 11.3,
+        "rebounds": 8.4,
+        "assists": 6.2,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.0",
+        "ft": "73.7"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "OG Anunoby",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628384.png",
+      "stats": {
+        "points": 17.6,
+        "rebounds": 4.8,
+        "assists": 3.2,
+        "steals": 0.0,
+        "blocks": 0.2,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "76.2"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Jalen Brunson",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628973.png",
+      "stats": {
+        "points": 29.9,
+        "rebounds": 3.8,
+        "assists": 8.6,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "78.2"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Mitchell Robinson",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629011.png",
+      "stats": {
+        "points": 7.1,
+        "rebounds": 11.0,
+        "assists": 1.5,
+        "steals": 0.5,
+        "blocks": 0.2,
+        "fg": "46.6",
+        "threePt": "0.0",
+        "ft": "71.9"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Mikal Bridges",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628969.png",
+      "stats": {
+        "points": 14.6,
+        "rebounds": 4.0,
+        "assists": 4.4,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "35.9",
+        "ft": "76.3"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Landry Shamet",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629013.png",
+      "stats": {
+        "points": 12.6,
+        "rebounds": 2.2,
+        "assists": 0.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.7",
+        "ft": "73.3"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Miles McBride",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630540.png",
+      "stats": {
+        "points": 16.9,
+        "rebounds": 2.0,
+        "assists": 3.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "73.2"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Guerschon Yabusele",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627824.png",
+      "stats": {
+        "points": 12.4,
+        "rebounds": 4.5,
+        "assists": 2.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.4",
+        "ft": "76.8"
+      },
+      "team": "NYK",
+      "is_home": true
+    },
+    {
+      "name": "Lonzo Ball",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628366.png",
+      "stats": {
+        "points": 12.8,
+        "rebounds": 6.8,
+        "assists": 4.7,
+        "steals": 0.3,
+        "blocks": 0.3,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "64.4"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Thomas Bryant",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628418.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 6.3,
+        "assists": 0.5,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "35.7",
+        "ft": "76.0"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Jarrett Allen",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628386.png",
+      "stats": {
+        "points": 7.1,
+        "rebounds": 9.8,
+        "assists": 2.0,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "0.0",
+        "ft": "75.1"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Donovan Mitchell",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628378.png",
+      "stats": {
+        "points": 27.1,
+        "rebounds": 4.4,
+        "assists": 5.7,
+        "steals": 0.1,
+        "blocks": 0.4,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.9"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Max Strus",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629622.png",
+      "stats": {
+        "points": 18.1,
+        "rebounds": 3.4,
+        "assists": 4.2,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.6",
+        "ft": "49.5"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Darius Garland",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629636.png",
+      "stats": {
+        "points": 25.2,
+        "rebounds": 2.4,
+        "assists": 8.7,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "76.8"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Dean Wade",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629731.png",
+      "stats": {
+        "points": 5.5,
+        "rebounds": 4.9,
+        "assists": 1.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "36.1",
+        "ft": "67.2"
+      },
+      "team": "CLE",
+      "is_home": false
+    },
+    {
+      "name": "Sam Merrill",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630241.png",
+      "stats": {
+        "points": 10.5,
+        "rebounds": 2.4,
+        "assists": 3.6,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "36.6",
+        "ft": "49.5"
+      },
+      "team": "CLE",
+      "is_home": false
+    }
+  ]
+}

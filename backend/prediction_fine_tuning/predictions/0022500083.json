@@ -1,0 +1,334 @@
+{
+  "game_id": "0022500083",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T10:41:32.019947",
+  "home_team": "BOS",
+  "away_team": "PHI",
+  "home_predicted_score": 138.6,
+  "away_predicted_score": 115.5,
+  "player_predictions": [
+    {
+      "name": "Jaylen Brown",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627759.png",
+      "stats": {
+        "points": 20.0,
+        "rebounds": 4.9,
+        "assists": 3.0,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "77.3"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Jayson Tatum",
+      "position": "F-G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628369.png",
+      "stats": {
+        "points": 22.6,
+        "rebounds": 7.0,
+        "assists": 6.5,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.5"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Derrick White",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628401.png",
+      "stats": {
+        "points": 18.7,
+        "rebounds": 2.5,
+        "assists": 7.5,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.7",
+        "ft": "73.3"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Chris Boucher",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628449.png",
+      "stats": {
+        "points": 9.6,
+        "rebounds": 5.8,
+        "assists": 0.9,
+        "steals": 0.4,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.1",
+        "ft": "76.3"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Anfernee Simons",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629014.png",
+      "stats": {
+        "points": 17.8,
+        "rebounds": 2.4,
+        "assists": 5.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.2",
+        "ft": "78.0"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Payton Pritchard",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630202.png",
+      "stats": {
+        "points": 21.3,
+        "rebounds": 3.9,
+        "assists": 5.8,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.7",
+        "ft": "26.7"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Xavier Tillman",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630214.png",
+      "stats": {
+        "points": 3.5,
+        "rebounds": 4.6,
+        "assists": 0.4,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.3",
+        "threePt": "0.0",
+        "ft": "53.3"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Sam Hauser",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630573.png",
+      "stats": {
+        "points": 13.5,
+        "rebounds": 4.9,
+        "assists": 1.1,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.7",
+        "ft": "69.0"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Luka Garza",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630568.png",
+      "stats": {
+        "points": 4.0,
+        "rebounds": 2.3,
+        "assists": 0.8,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "7.9",
+        "ft": "57.9"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Neemias Queta",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629674.png",
+      "stats": {
+        "points": 4.6,
+        "rebounds": 4.9,
+        "assists": 1.5,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "0.0",
+        "ft": "72.6"
+      },
+      "team": "BOS",
+      "is_home": true
+    },
+    {
+      "name": "Kyle Lowry",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/200768.png",
+      "stats": {
+        "points": 5.5,
+        "rebounds": 4.7,
+        "assists": 2.8,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.0",
+        "threePt": "29.7",
+        "ft": "72.9"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Eric Gordon",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201569.png",
+      "stats": {
+        "points": 4.1,
+        "rebounds": 3.1,
+        "assists": 2.0,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "35.9",
+        "ft": "77.0"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Paul George",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/202331.png",
+      "stats": {
+        "points": 13.6,
+        "rebounds": 6.2,
+        "assists": 4.5,
+        "steals": 0.6,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "76.3"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Andre Drummond",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203083.png",
+      "stats": {
+        "points": 8.4,
+        "rebounds": 12.4,
+        "assists": 0.8,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "0.0",
+        "ft": "42.4"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Joel Embiid",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203954.png",
+      "stats": {
+        "points": 23.7,
+        "rebounds": 12.3,
+        "assists": 3.7,
+        "steals": 0.5,
+        "blocks": 0.2,
+        "fg": "46.7",
+        "threePt": "34.7",
+        "ft": "79.2"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Tyrese Maxey",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630178.png",
+      "stats": {
+        "points": 16.3,
+        "rebounds": 3.9,
+        "assists": 5.9,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "35.6",
+        "ft": "78.0"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Quentin Grimes",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629656.png",
+      "stats": {
+        "points": 23.5,
+        "rebounds": 3.1,
+        "assists": 3.3,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "75.6"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Trendon Watford",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630570.png",
+      "stats": {
+        "points": 14.2,
+        "rebounds": 4.4,
+        "assists": 4.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "30.7",
+        "ft": "78.3"
+      },
+      "team": "PHI",
+      "is_home": false
+    },
+    {
+      "name": "Dominick Barlow",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631230.png",
+      "stats": {
+        "points": 3.2,
+        "rebounds": 4.5,
+        "assists": 0.8,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.0",
+        "threePt": "25.3",
+        "ft": "72.6"
+      },
+      "team": "PHI",
+      "is_home": false
+    }
+  ]
+}

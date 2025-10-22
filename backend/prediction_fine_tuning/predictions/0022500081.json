@@ -1,0 +1,300 @@
+{
+  "game_id": "0022500081",
+  "game_date": "2025-10-22",
+  "timestamp": "2025-10-22T03:03:17.222207",
+  "home_team": "ORL",
+  "away_team": "MIA",
+  "home_predicted_score": 154.5,
+  "away_predicted_score": 113.5,
+  "player_predictions": [
+    {
+      "name": "Tyus Jones",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626145.png",
+      "stats": {
+        "points": 11.0,
+        "rebounds": 3.1,
+        "assists": 3.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "46.3"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Jonathan Isaac",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628371.png",
+      "stats": {
+        "points": 7.9,
+        "rebounds": 5.6,
+        "assists": 1.5,
+        "steals": 0.4,
+        "blocks": 0.2,
+        "fg": "46.5",
+        "threePt": "33.8",
+        "ft": "76.0"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Moritz Wagner",
+      "position": "F-C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629021.png",
+      "stats": {
+        "points": 13.7,
+        "rebounds": 5.5,
+        "assists": 1.6,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.3",
+        "ft": "77.3"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Goga Bitadze",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629048.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 6.6,
+        "assists": 2.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "26.2",
+        "ft": "77.1"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Desmond Bane",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630217.png",
+      "stats": {
+        "points": 26.3,
+        "rebounds": 3.7,
+        "assists": 4.8,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.7",
+        "ft": "71.7"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Jalen Suggs",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630591.png",
+      "stats": {
+        "points": 18.4,
+        "rebounds": 4.1,
+        "assists": 2.5,
+        "steals": 0.6,
+        "blocks": 0.1,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "78.0"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Franz Wagner",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630532.png",
+      "stats": {
+        "points": 24.9,
+        "rebounds": 6.0,
+        "assists": 2.7,
+        "steals": 1.7,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.1",
+        "ft": "78.7"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Paolo Banchero",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631094.png",
+      "stats": {
+        "points": 30.0,
+        "rebounds": 7.3,
+        "assists": 5.4,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "78.7"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Jamal Cain",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631288.png",
+      "stats": {
+        "points": 9.1,
+        "rebounds": 3.1,
+        "assists": 0.9,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "35.9",
+        "ft": "76.1"
+      },
+      "team": "ORL",
+      "is_home": true
+    },
+    {
+      "name": "Andrew Wiggins",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203952.png",
+      "stats": {
+        "points": 15.6,
+        "rebounds": 4.3,
+        "assists": 2.8,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.3",
+        "ft": "76.7"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Terry Rozier",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626179.png",
+      "stats": {
+        "points": 4.8,
+        "rebounds": 4.6,
+        "assists": 2.3,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.0",
+        "threePt": "35.7",
+        "ft": "57.9"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Norman Powell",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1626181.png",
+      "stats": {
+        "points": 18.4,
+        "rebounds": 3.2,
+        "assists": 1.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.5",
+        "ft": "77.1"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Bam Adebayo",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628389.png",
+      "stats": {
+        "points": 19.3,
+        "rebounds": 9.8,
+        "assists": 4.4,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "32.7",
+        "ft": "78.2"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Tyler Herro",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629639.png",
+      "stats": {
+        "points": 24.4,
+        "rebounds": 6.0,
+        "assists": 3.5,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "78.2"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Davion Mitchell",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630558.png",
+      "stats": {
+        "points": 11.5,
+        "rebounds": 1.0,
+        "assists": 6.2,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "33.9",
+        "ft": "76.4"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Simone Fontecchio",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631323.png",
+      "stats": {
+        "points": 5.7,
+        "rebounds": 3.9,
+        "assists": 1.8,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.1",
+        "threePt": "36.2",
+        "ft": "57.1"
+      },
+      "team": "MIA",
+      "is_home": false
+    },
+    {
+      "name": "Nikola Jovi\u0107",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1631107.png",
+      "stats": {
+        "points": 10.8,
+        "rebounds": 5.2,
+        "assists": 4.4,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.0",
+        "ft": "70.6"
+      },
+      "team": "MIA",
+      "is_home": false
+    }
+  ]
+}

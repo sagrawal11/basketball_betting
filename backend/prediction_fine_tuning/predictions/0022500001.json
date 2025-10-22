@@ -1,0 +1,503 @@
+{
+  "game_id": "0022500001",
+  "game_date": "2025-10-21",
+  "timestamp": "2025-10-22T13:07:55.592351",
+  "home_team": "OKC",
+  "away_team": "HOU",
+  "home_predicted_score": 127.7,
+  "away_predicted_score": 138.5,
+  "player_predictions": [
+    {
+      "name": "Alex Caruso",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627936.png",
+      "stats": {
+        "points": 10.2,
+        "rebounds": 5.5,
+        "assists": 2.5,
+        "steals": 0.8,
+        "blocks": 0.1,
+        "fg": "46.5",
+        "threePt": "36.2",
+        "ft": "75.0"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Shai Gilgeous-Alexander",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628983.png",
+      "stats": {
+        "points": 30.6,
+        "rebounds": 4.7,
+        "assists": 7.7,
+        "steals": 0.2,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.5",
+        "ft": "78.9"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Kenrich Williams",
+      "position": "G-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629026.png",
+      "stats": {
+        "points": 10.9,
+        "rebounds": 6.7,
+        "assists": 5.0,
+        "steals": 0.5,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.2",
+        "ft": "75.0"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Isaiah Hartenstein",
+      "position": "C-F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628392.png",
+      "stats": {
+        "points": 13.4,
+        "rebounds": 6.6,
+        "assists": 2.3,
+        "steals": 0.3,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "0.0",
+        "ft": "64.4"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Luguentz Dort",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629652.png",
+      "stats": {
+        "points": 11.4,
+        "rebounds": 4.7,
+        "assists": 1.4,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.5",
+        "ft": "75.0"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Isaiah Joe",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630198.png",
+      "stats": {
+        "points": 16.0,
+        "rebounds": 2.6,
+        "assists": 1.9,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.6",
+        "ft": "76.9"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Aaron Wiggins",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630598.png",
+      "stats": {
+        "points": 13.2,
+        "rebounds": 3.7,
+        "assists": 3.1,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.7",
+        "threePt": "36.4",
+        "ft": "76.8"
+      },
+      "team": "OKC",
+      "is_home": true
+    },
+    {
+      "name": "Kevin Durant",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201142.png",
+      "stats": {
+        "points": 25.5,
+        "rebounds": 5.5,
+        "assists": 1.3,
+        "steals": 0.0,
+        "blocks": 0.1,
+        "fg": "46.8",
+        "threePt": "36.6",
+        "ft": "78.9"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Jeff Green",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/201145.png",
+      "stats": {
+        "points": 11.1,
+        "rebounds": 4.7,
+        "assists": 1.7,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.5",
+        "threePt": "36.2",
+        "ft": "73.1"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Steven Adams",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203500.png",
+      "stats": {
+        "points": 6.0,
+        "rebounds": 11.1,
+        "assists": 0.7,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.3",
+        "threePt": "0.0",
+        "ft": "69.7"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Clint Capela",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/203991.png",
+      "stats": {
+        "points": 6.4,
+        "rebounds": 9.2,
+        "assists": 0.7,
+        "steals": 0.3,
+        "blocks": 0.1,
+        "fg": "46.4",
+        "threePt": "0.0",
+        "ft": "73.0"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Dorian Finney-Smith",
+      "position": "F",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627827.png",
+      "stats": {
+        "points": 8.6,
+        "rebounds": 5.5,
+        "assists": 2.2,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.6",
+        "ft": "46.3"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Fred VanVleet",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1627832.png",
+      "stats": {
+        "points": 10.8,
+        "rebounds": 1.7,
+        "assists": 3.4,
+        "steals": 0.1,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.5",
+        "ft": "74.7"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Aaron Holiday",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628988.png",
+      "stats": {
+        "points": 12.8,
+        "rebounds": 1.7,
+        "assists": 4.6,
+        "steals": 0.0,
+        "blocks": 0.0,
+        "fg": "46.6",
+        "threePt": "36.2",
+        "ft": "50.9"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Josh Okogie",
+      "position": "G",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1629006.png",
+      "stats": {
+        "points": 10.5,
+        "rebounds": 3.7,
+        "assists": 2.6,
+        "steals": 0.1,
+        "blocks": 0.1,
+        "fg": "46.6",
+        "threePt": "36.6",
+        "ft": "77.4"
+      },
+      "team": "HOU",
+      "is_home": false
+    },
+    {
+      "name": "Alperen Sengun",
+      "position": "C",
+      "image": "https://cdn.nba.com/headshots/nba/latest/1040x760/1630578.png",
+      "stats": {
+        "points": 23.0,
+        "rebounds": 9.7,
+        "assists": 3.8,
+        "steals": 0.6,
+        "blocks": 0.2,
+        "fg": "46.8",
+        "threePt": "26.2",
+        "ft": "79.0"
+      },
+      "team": "HOU",
+      "is_home": false
+    }
+  ],
+  "home_actual_score": 125,
+  "away_actual_score": 124,
+  "player_actual_stats": [
+    {
+      "player_name": "Luguentz Dort",
+      "team": "OKC",
+      "points": 6,
+      "rebounds": 6,
+      "assists": 5,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 0.166666666666667,
+      "fg3_pct": 0.0,
+      "ft_pct": 1.0,
+      "minutes": "PT45M15.10S"
+    },
+    {
+      "player_name": "Isaiah Hartenstein",
+      "team": "OKC",
+      "points": 6,
+      "rebounds": 8,
+      "assists": 5,
+      "steals": 2,
+      "blocks": 0,
+      "fg_pct": 0.4,
+      "fg3_pct": 0.0,
+      "ft_pct": 1.0,
+      "minutes": "PT36M50.50S"
+    },
+    {
+      "player_name": "Shai Gilgeous-Alexander",
+      "team": "OKC",
+      "points": 35,
+      "rebounds": 5,
+      "assists": 5,
+      "steals": 2,
+      "blocks": 2,
+      "fg_pct": 0.461538461538462,
+      "fg3_pct": 0.111111111111111,
+      "ft_pct": 0.714285714285714,
+      "minutes": "PT47M13.00S"
+    },
+    {
+      "player_name": "Aaron Wiggins",
+      "team": "OKC",
+      "points": 10,
+      "rebounds": 1,
+      "assists": 1,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.5,
+      "fg3_pct": 0.4,
+      "ft_pct": 0.0,
+      "minutes": "PT20M32.00S"
+    },
+    {
+      "player_name": "Alex Caruso",
+      "team": "OKC",
+      "points": 8,
+      "rebounds": 2,
+      "assists": 3,
+      "steals": 2,
+      "blocks": 1,
+      "fg_pct": 0.333333333333333,
+      "fg3_pct": 0.333333333333333,
+      "ft_pct": 0.0,
+      "minutes": "PT30M10.80S"
+    },
+    {
+      "player_name": "Isaiah Joe",
+      "team": "OKC",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Kenrich Williams",
+      "team": "OKC",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Alperen Sengun",
+      "team": "HOU",
+      "points": 39,
+      "rebounds": 11,
+      "assists": 7,
+      "steals": 2,
+      "blocks": 1,
+      "fg_pct": 0.5,
+      "fg3_pct": 0.625,
+      "ft_pct": 0.9090909090909091,
+      "minutes": "PT48M53.40S"
+    },
+    {
+      "player_name": "Steven Adams",
+      "team": "HOU",
+      "points": 4,
+      "rebounds": 13,
+      "assists": 3,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.25,
+      "fg3_pct": 0.0,
+      "ft_pct": 1.0,
+      "minutes": "PT36M30.40S"
+    },
+    {
+      "player_name": "Kevin Durant",
+      "team": "HOU",
+      "points": 23,
+      "rebounds": 9,
+      "assists": 3,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.5625,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.833333333333334,
+      "minutes": "PT47M03.00S"
+    },
+    {
+      "player_name": "Clint Capela",
+      "team": "HOU",
+      "points": 4,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 1,
+      "blocks": 0,
+      "fg_pct": 1.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 1.0,
+      "minutes": "PT07M51.60S"
+    },
+    {
+      "player_name": "Josh Okogie",
+      "team": "HOU",
+      "points": 8,
+      "rebounds": 2,
+      "assists": 1,
+      "steals": 0,
+      "blocks": 1,
+      "fg_pct": 0.333333333333333,
+      "fg3_pct": 0.333333333333333,
+      "ft_pct": 0.833333333333334,
+      "minutes": "PT19M57.80S"
+    },
+    {
+      "player_name": "Dorian Finney-Smith",
+      "team": "HOU",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Jeff Green",
+      "team": "HOU",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Aaron Holiday",
+      "team": "HOU",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    },
+    {
+      "player_name": "Fred VanVleet",
+      "team": "HOU",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
+      "blocks": 0,
+      "fg_pct": 0.0,
+      "fg3_pct": 0.0,
+      "ft_pct": 0.0,
+      "minutes": "PT00M00.00S"
+    }
+  ],
+  "stat_accuracy": 60.2,
+  "score_accuracy": 60.2,
+  "avg_points_diff": 7.4,
+  "accuracy_breakdown": {
+    "team_score_accuracy": 93.0732258064516,
+    "player_points_accuracy": 54.47833651855391,
+    "other_stats_accuracy": 34.839252414252414
+  }
+}
