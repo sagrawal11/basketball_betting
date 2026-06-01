@@ -66,6 +66,7 @@ def upload_full_training_bundle(bucket: str) -> None:
     Used by GitHub Actions after full retraining.
     """
     import sys
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from config.paths import (
         GLOBAL_MODEL_DIR, PLAYER_DATA_DIR, AUXILIARY_DIR,
@@ -78,7 +79,9 @@ def upload_full_training_bundle(bucket: str) -> None:
         return
     
     uploaded = 0
-    print("Uploading full ML training bundle (~2.8 GB)...")
+    print("Gathering files for full ML training bundle (~2.8 GB)...")
+    
+    upload_tasks = []
     
     # Upload everything in player_data EXCEPT the massive bloated CSV features
     for root, _, files in os.walk(PLAYER_DATA_DIR):
@@ -89,26 +92,40 @@ def upload_full_training_bundle(bucket: str) -> None:
             local_path = Path(root) / file
             rel_path = local_path.relative_to(PLAYER_DATA_DIR)
             key = f"data/player_data/{rel_path}"
-            if _upload_file(s3, local_path, bucket, key):
-                uploaded += 1
+            upload_tasks.append((local_path, key))
                 
     # Model artifacts
     if GLOBAL_MODEL_DIR.exists():
         for f in GLOBAL_MODEL_DIR.iterdir():
             if f.is_file():
-                _upload_file(s3, f, bucket, f"artifacts/global/{f.name}")
-                uploaded += 1
+                upload_tasks.append((f, f"artifacts/global/{f.name}"))
                 
     if FEATURE_COLUMNS_PATH.exists():
-        _upload_file(s3, FEATURE_COLUMNS_PATH, bucket, f"artifacts/{FEATURE_COLUMNS_PATH.name}")
-        uploaded += 1
+        upload_tasks.append((FEATURE_COLUMNS_PATH, f"artifacts/{FEATURE_COLUMNS_PATH.name}"))
         
+    print(f"Uploading {len(upload_tasks)} files using multi-threading...")
+    
+    def _do_upload(task):
+        path, key = task
+        # Need a fresh client per thread for thread safety
+        s3_thread = get_r2_client()
+        return _upload_file(s3_thread, path, bucket, key)
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        futures = {executor.submit(_do_upload, task): task for task in upload_tasks}
+        for future in as_completed(futures):
+            if future.result():
+                uploaded += 1
+                if uploaded % 500 == 0:
+                    print(f"  ...uploaded {uploaded} files")
+                    
     print(f"Full upload complete: {uploaded} files pushed.")
 
 
 def download_full_training_bundle(bucket: str) -> None:
     """Download the ENTIRE ML dataset (~2.8 GB) for GitHub Actions retraining."""
     import sys
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from config.paths import (
         GLOBAL_MODEL_DIR, PLAYER_DATA_DIR, AUXILIARY_DIR,
@@ -120,7 +137,7 @@ def download_full_training_bundle(bucket: str) -> None:
         print("R2 credentials not configured.")
         return
         
-    print("Downloading full ML training bundle (~2.8 GB)...")
+    print("Gathering remote files for full ML training bundle (~2.8 GB)...")
     prefix_to_local = {
         "artifacts/global/": GLOBAL_MODEL_DIR,
         "artifacts/": ARTIFACTS_DIR,
@@ -130,7 +147,7 @@ def download_full_training_bundle(bucket: str) -> None:
         "data/player_data/": PLAYER_DATA_DIR,
     }
     
-    downloaded = 0
+    download_tasks = []
     try:
         paginator = s3.get_paginator('list_objects_v2')
         pages = paginator.paginate(Bucket=bucket)
@@ -150,13 +167,33 @@ def download_full_training_bundle(bucket: str) -> None:
                 
                 if not local_path or local_path.exists():
                     continue
-                
-                local_path.parent.mkdir(parents=True, exist_ok=True)
-                s3.download_file(bucket, s3_key, str(local_path))
+                    
+                download_tasks.append((s3_key, local_path))
+    except Exception as e:
+        print(f"Failed to list objects: {e}")
+        return
+
+    print(f"Downloading {len(download_tasks)} new files using multi-threading...")
+    downloaded = 0
+    
+    def _do_download(task):
+        key, path = task
+        s3_thread = get_r2_client()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            s3_thread.download_file(bucket, key, str(path))
+            return True
+        except Exception:
+            return False
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        futures = {executor.submit(_do_download, task): task for task in download_tasks}
+        for future in as_completed(futures):
+            if future.result():
                 downloaded += 1
-    except ClientError as e:
-        print(f"Download failed: {e}")
-        
+                if downloaded % 500 == 0:
+                    print(f"  ...downloaded {downloaded} files")
+                    
     print(f"Full download complete: {downloaded} new files.")
 
 
