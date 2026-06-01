@@ -1,18 +1,11 @@
 {
-  "total_records": 1163,
-  "seasons": 29,
-  "teams_per_season": 40,
+  "source": "kaggle_teams_boxscores",
+  "input_path": "/Users/sarthak/Desktop/App Projects/basketball_betting/backend/data/Kaggle NBA Team Data/processed/teams_boxscores.csv",
+  "game_level_parquet": "/Users/sarthak/Desktop/App Projects/basketball_betting/backend/data/processed/kaggle_team_games.parquet",
+  "team_stats_parquet": "/Users/sarthak/Desktop/App Projects/basketball_betting/backend/data/team_stats/all_team_stats.parquet",
+  "regular_season_only": false,
+  "total_records": 601,
   "seasons_covered": [
-    "1996-97",
-    "1997-98",
-    "1998-99",
-    "1999-00",
-    "2000-01",
-    "2001-02",
-    "2002-03",
-    "2003-04",
-    "2004-05",
-    "2005-06",
     "2006-07",
     "2007-08",
     "2008-09",
@@ -31,21 +24,8 @@
     "2021-22",
     "2022-23",
     "2023-24",
-    "2024-25"
+    "2024-25",
+    "2025-26"
   ],
-  "key_columns": [
-    "TEAM_ABBREVIATION",
-    "OFF_RATING",
-    "DEF_RATING",
-    "PACE",
-    "NET_RATING",
-    "W_PCT",
-    "OREB",
-    "DREB",
-    "REB",
-    "FGA",
-    "FG_PCT",
-    "OREB_PCT",
-    "DREB_PCT"
-  ]
+  "note": "PACE/OFF/DEF/NET are means of game-level box advanced stats (not identical to official season dashboards)."
 }

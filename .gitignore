@@ -41,22 +41,9 @@ env/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Backend Data Files - Keep structure but ignore actual data
-backend/data/player_data/**/*.csv
-backend/data/player_data/**/*.json
-backend/data/player_data/**/*.log
-backend/data/player_data/**/models/
-backend/data/team_stats/*.csv
-
-# Processed data
-backend/data/processed_data/
-
-# Model files (too large for git)
-*.pkl
-*.h5
-*.pt
-*.pth
-backend/models/**/*.pkl
+# Backend Data Files - Ignore all local data and models
+backend/data/
+backend/models/artifacts/
 
 # Training outputs
 catboost_info/

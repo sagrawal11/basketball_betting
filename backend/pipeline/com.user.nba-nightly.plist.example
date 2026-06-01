@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Example launchd job: nightly refresh after games.
+  Default pipeline/nightly.py rebuilds Kaggle-derived parquets when teams_boxscores.csv is present.
+  1. cp com.user.nba-nightly.plist.example ~/Library/LaunchAgents/com.user.nba-nightly.plist
+  2. Edit WorkingDirectory and ProgramArguments paths to your repo + Python.
+  3. Adjust StartCalendarInterval (hour/minute) — e.g. 6:30 AM local = after West games.
+  4. launchctl load ~/Library/LaunchAgents/com.user.nba-nightly.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.nba-nightly</string>
+  <key>WorkingDirectory</key>
+  <string>/ABSOLUTE/PATH/TO/basketball_betting/backend</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/ABSOLUTE/PATH/TO/venv/bin/python</string>
+    <string>pipeline/nightly.py</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/nba-nightly.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/nba-nightly.err</string>
+</dict>
+</plist>

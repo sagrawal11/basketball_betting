@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import HistoricalGameCard from "@/components/HistoricalGameCard";
 import { useEffect, useState } from "react";
 
-const API_BASE = "http://localhost:5001/api";
+import { API_BASE } from "@/lib/api";
 
 interface HistoricalGame {
   id: string;

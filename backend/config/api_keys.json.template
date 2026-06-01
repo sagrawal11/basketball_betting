@@ -1,4 +1,3 @@
 {
-  "nba_api_key": "optional_if_needed",
-  "_comment": "Add API keys here as needed"
+  "_comment": "Optional third-party keys for future integrations (not used by the Kaggle + local CSV pipeline)."
 }

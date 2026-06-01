@@ -50,6 +50,11 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Backend (ML & API)
+
+- [Project plan & data layout](../PLANNING.md) (repo root)
+- [Backend README](../backend/README.md)
+
 ## What technologies are used for this project?
 
 This project is built with:

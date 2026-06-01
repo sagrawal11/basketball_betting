@@ -1,364 +1,536 @@
 #!/usr/bin/env python3
 """
-NBA Betting Assistant - Web Application
-========================================
-Flask web app for making data-driven betting decisions
+NBA Betting Assistant — Flask API for predictions.
+
+No stats.nba.com / nba_api at runtime: schedules and rosters come from local `player_data`
+and optional UI-provided matchups. Injuries are fetched live from ESPN.
 """
 
-from flask import Flask, render_template, jsonify, request
-from flask_cors import CORS
-from datetime import datetime, timedelta
-import sys
-from pathlib import Path
-import numpy as np
+from __future__ import annotations
 
-# Add parent directory to path for imports
+import json
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import pandas as pd
+import pytz
+import requests
+import os
+import redis
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from models.prediction_engine import NBAGamePredictor
-from models.betting_recommender import BettingRecommender
-
-# Add prediction storage
-sys.path.insert(0, str(Path(__file__).parent.parent / "prediction_fine_tuning"))
-from prediction_storage import PredictionStorage
+from models.predictor import NBAPredictor
+from data_collection.collect_injuries import fetch_team_injuries, _normalize_team_abbrev
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'nba-betting-secret-key-change-in-production'
+app.config["SECRET_KEY"] = "nba-betting-secret-key-change-in-production"
 
-# Enable CORS for React frontend (allow all origins during development)
 CORS(app)
 
-# Get absolute paths
+redis_client = None
+redis_url = os.environ.get("REDIS_URL") or os.environ.get("UPSTASH_REDIS_URL")
+if redis_url:
+    try:
+        redis_client = redis.from_url(redis_url)
+        print("Connected to Redis for baseline caching.")
+    except Exception as e:
+        print(f"Failed to connect to Redis: {e}")
+
 backend_dir = Path(__file__).parent.parent
 data_dir = backend_dir / "data"
 models_dir = data_dir / "player_data"
+predictions_dir = backend_dir / "data" / "predictions"
 
-# Initialize prediction engine, recommender, and storage with absolute paths
-predictor = NBAGamePredictor(data_dir=str(data_dir), models_dir=str(models_dir))
-recommender = BettingRecommender()
-predictions_dir = backend_dir / "prediction_fine_tuning" / "predictions"
-storage = PredictionStorage(storage_dir=str(predictions_dir))
+try:
+    from utils.storage import download_directory
+    from config.paths import GLOBAL_MODEL_DIR, PLAYER_DATA_DIR
+    bucket = os.environ.get("R2_BUCKET_NAME")
+    if bucket:
+        if not list(GLOBAL_MODEL_DIR.glob("*.joblib")):
+            print("Models not found locally. Downloading from R2...")
+            download_directory(bucket, "models", GLOBAL_MODEL_DIR)
+            download_directory(bucket, "player_data", PLAYER_DATA_DIR)
+            print("Download complete.")
+except Exception as e:
+    print(f"Failed to sync from R2: {e}")
+
+predictor = NBAPredictor(data_dir=str(data_dir), models_dir=str(models_dir))
+
+PLACEHOLDER_HEADSHOT = "https://via.placeholder.com/260x190?text=Player"
+
+# ── Injury cache (avoid hammering ESPN on every request) ─────────────────────
+_injury_cache: Dict[str, Any] = {}
+_injury_cache_ts: float = 0.0
+INJURY_CACHE_TTL = 120  # seconds
 
 
-@app.route('/')
-def index():
-    """Home page - shows today's games"""
-    return render_template('index.html')
+def _get_cached_injuries() -> Dict[str, List[Dict[str, Any]]]:
+    """Return injuries grouped by team_abbrev, cached for INJURY_CACHE_TTL seconds."""
+    global _injury_cache, _injury_cache_ts
+    now = time.time()
+    if _injury_cache and (now - _injury_cache_ts) < INJURY_CACHE_TTL:
+        return _injury_cache
 
-
-@app.route('/game/<game_id>')
-def game_page(game_id):
-    """Game page - shows players and predictions"""
-    return render_template('game.html')
-
-
-@app.route('/api/games/today')
-def get_todays_games():
-    """API endpoint to fetch today's NBA games"""
     try:
-        # Get today's games from NBA API
-        from nba_api.stats.endpoints import scoreboardv2
-        from nba_api.stats.static import teams as nba_teams
-        import pytz
-        
-        # Get current date in US Eastern Time (NBA's timezone)
-        eastern = pytz.timezone('US/Eastern')
-        today = datetime.now(eastern)
-        date_str = today.strftime('%m/%d/%Y')  # Format: MM/DD/YYYY for NBA API
-        
-        print(f"📅 Fetching games for: {today.strftime('%Y-%m-%d %H:%M %Z')} (API format: {date_str})")
-        
-        # Get all NBA teams for ID lookup
-        all_teams = nba_teams.get_teams()
-        team_lookup = {team['id']: team for team in all_teams}
-        
-        # Fetch scoreboard for specific date
-        scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
-        games_data = scoreboard.get_normalized_dict()
-        
-        formatted_games = []
-        
-        # Parse games from the response
-        if 'GameHeader' in games_data:
-            for game in games_data['GameHeader']:
-                game_id = game.get('GAME_ID')
-                home_team_id = game.get('HOME_TEAM_ID')
-                visitor_team_id = game.get('VISITOR_TEAM_ID')
-                
-                # Get team info from static teams data
-                home_team_data = team_lookup.get(home_team_id, {})
-                away_team_data = team_lookup.get(visitor_team_id, {})
-                
-                home_team = {
-                    'name': home_team_data.get('full_name', 'Home Team'),
-                    'abbrev': home_team_data.get('abbreviation', 'HOME'),
-                    'score': 0
-                }
-                
-                away_team = {
-                    'name': away_team_data.get('full_name', 'Away Team'),
-                    'abbrev': away_team_data.get('abbreviation', 'AWAY'),
-                    'score': 0
-                }
-                
-                # Check LineScore for live scores (if game started)
-                if 'LineScore' in games_data:
-                    for team in games_data['LineScore']:
-                        if team.get('GAME_ID') == game_id:
-                            if team.get('TEAM_ID') == home_team_id:
-                                home_team['score'] = team.get('PTS') or 0
-                            elif team.get('TEAM_ID') == visitor_team_id:
-                                away_team['score'] = team.get('PTS') or 0
-                
-                # Format to match React component expectations
-                formatted_games.append({
-                    'id': game_id,
-                    'homeTeam': {
-                        'name': home_team['name'],
-                        'abbrev': home_team['abbrev'],
-                        'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg"
-                    },
-                    'awayTeam': {
-                        'name': away_team['name'],
-                        'abbrev': away_team['abbrev'],
-                        'logo': f"https://cdn.nba.com/logos/nba/{visitor_team_id}/global/L/logo.svg"
-                    },
-                    'time': game.get('GAME_STATUS_TEXT', 'TBD'),
-                    'date': today.strftime('%B %d, %Y'),
-                    'location': 'NBA Arena'  # Can enhance this later
-                })
-        
-        print(f"✅ Found {len(formatted_games)} games")
-        
-        return jsonify({
-            'success': True,
-            'games': formatted_games,
-            'date': today.strftime('%Y-%m-%d'),
-            'count': len(formatted_games)
-        })
-        
+        from data_collection.collect_injuries import fetch_injuries_from_espn
+        df = fetch_injuries_from_espn()
+        if df.empty:
+            _injury_cache = {}
+        else:
+            grouped: Dict[str, List[Dict[str, Any]]] = {}
+            for _, row in df.iterrows():
+                team = row.get("team_abbrev", "")
+                if team not in grouped:
+                    grouped[team] = []
+                grouped[team].append(row.to_dict())
+            _injury_cache = grouped
+        _injury_cache_ts = now
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        print(f"Injury cache refresh failed: {e}")
+        # Keep stale cache rather than returning nothing
+
+    return _injury_cache
 
 
-@app.route('/api/game/<game_id>/players')
-def get_game_players(game_id):
-    """Get all players for a specific game with PRE-GENERATED predictions"""
-    try:
-        from nba_api.stats.endpoints import commonteamroster
-        import pytz
-        
-        # Get team abbreviations from query params
-        home_abbrev = request.args.get('home')
-        away_abbrev = request.args.get('away')
-        
-        if not home_abbrev or not away_abbrev:
-            return jsonify({'success': False, 'error': 'Missing team info'}), 400
-        
-        print(f"📋 Fetching rosters for {away_abbrev} @ {home_abbrev}")
-        
-        # Get current season and date
-        eastern = pytz.timezone('US/Eastern')
-        today = datetime.now(eastern)
-        season = predictor._get_current_season()
-        game_date = today.strftime('%Y-%m-%d')
-        
-        # Get team IDs
-        from nba_api.stats.static import teams as nba_teams
-        all_teams = nba_teams.get_teams()
-        team_lookup = {team['abbreviation']: team['id'] for team in all_teams}
-        
-        home_team_id = team_lookup.get(home_abbrev)
-        away_team_id = team_lookup.get(away_abbrev)
-        
-        players_with_predictions = []
-        
-        # Fetch rosters for both teams
-        for team_id, team_abbrev, is_home_team in [(home_team_id, home_abbrev, True), (away_team_id, away_abbrev, False)]:
-            if not team_id:
-                continue
+def _slug_to_display(slug: str) -> str:
+    """Convert 'lebron_james' to 'LeBron James' (display-quality)."""
+    return slug.replace("_", " ")
+
+
+def _display_to_slug(display_name: str) -> str:
+    """Convert 'LeBron James' to 'lebron_james'."""
+    return display_name.lower().replace(" ", "_")
+
+
+def _match_injury_to_roster(injury_name: str, roster_names: List[str]) -> Optional[str]:
+    """Best-effort match ESPN injury name to our roster slug names.
+
+    Handles common edge cases: Jr./Jr, III, accented chars.
+    """
+    injury_lower = injury_name.lower().strip()
+    # Remove suffixes for matching
+    clean = injury_lower.replace(".", "").replace("'", "").replace("'", "")
+
+    for roster_name in roster_names:
+        roster_lower = roster_name.lower().strip()
+        roster_clean = roster_lower.replace(".", "").replace("'", "").replace("'", "")
+
+        # Exact match
+        if clean == roster_clean:
+            return roster_name
+
+        # Handle slug format (underscore vs space)
+        if clean.replace(" ", "_") == roster_clean.replace(" ", "_"):
+            return roster_name
+
+    # Fuzzy: check if ESPN last name matches any roster last name
+    injury_parts = injury_lower.split()
+    if len(injury_parts) >= 2:
+        injury_last = injury_parts[-1].replace(".", "")
+        for roster_name in roster_names:
+            roster_parts = roster_name.lower().split()
+            if len(roster_parts) >= 2:
+                roster_last = roster_parts[-1].replace(".", "")
+                roster_first = roster_parts[0]
+                injury_first = injury_parts[0]
+                # Match last name + first initial
+                if injury_last == roster_last and injury_first[0] == roster_first[0]:
+                    return roster_name
+
+    return None
+
+
+def team_logo_url(abbrev: str) -> str:
+    a = (abbrev or "nba").strip().lower()
+    return f"https://a.espncdn.com/i/teamlogos/nba/500/{a}.png"
+
+
+def _load_prediction_history() -> List[Dict[str, Any]]:
+    """Load prediction history from JSON files in predictions_dir."""
+    predictions_dir.mkdir(parents=True, exist_ok=True)
+    results = []
+    for f in sorted(predictions_dir.glob("*.json")):
+        try:
+            results.append(json.loads(f.read_text(encoding="utf-8")))
+        except Exception:
+            pass
+    return results
+
+
+def _save_prediction(data: Dict[str, Any]) -> None:
+    """Save a prediction to a JSON file."""
+    predictions_dir.mkdir(parents=True, exist_ok=True)
+    game_id = data.get("game_id", "unknown")
+    game_date = data.get("game_date", "unknown")
+    path = predictions_dir / f"{game_date}_{game_id}.json"
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def scan_players_on_teams(player_root: Path, home: str, away: str) -> List[Tuple[str, str, bool]]:
+    """(display_name, team_abbrev, is_home) using latest PLAYER_TEAM in each player CSV."""
+    out: List[Tuple[str, str, bool]] = []
+    home_u, away_u = home.upper().strip(), away.upper().strip()
+    for d in sorted(player_root.iterdir()):
+        if not d.is_dir():
+            continue
+        slug = d.name
+        csv_path = d / f"{slug}_data.csv"
+        if not csv_path.exists():
+            continue
+        try:
+            df = pd.read_csv(csv_path)
+        except Exception:
+            continue
+        if "PLAYER_TEAM" not in df.columns or "GAME_DATE" not in df.columns or len(df) == 0:
+            continue
             
-            try:
-                # Get roster (this gets current season roster)
-                roster = commonteamroster.CommonTeamRoster(team_id=team_id, season=season)
-                roster_data = roster.get_normalized_dict()
-                
-                if 'CommonTeamRoster' in roster_data:
-                    # Get top 10 players by experience (starters + key bench)
-                    # Handle 'R' for rookies
-                    def get_exp(player):
-                        exp = player.get('EXP', 0)
-                        if exp == 'R':
-                            return 0
-                        try:
-                            return int(exp)
-                        except:
-                            return 0
-                    
-                    players = sorted(roster_data['CommonTeamRoster'], 
-                                   key=get_exp, 
-                                   reverse=True)[:10]
-                    
-                    for player in players:
-                        player_name = player.get('PLAYER')
-                        
-                        # Check if we have a model for this player
-                        player_model_dir = predictor.models_dir / player_name.replace(' ', '_')
-                        if not player_model_dir.exists():
-                            continue  # Skip if no trained model
-                        
-                        # Auto-detect injury status and teammates out
-                        # TODO: Implement NBA injury API fetch
-                        # For now, default to Healthy with no teammates out
-                        injury_status = 'Healthy'
-                        teammates_out = []
-                        
-                        # Generate prediction
-                        opponent_abbrev = away_abbrev if is_home_team else home_abbrev
-                        preds = predictor.predict_player_stats(
-                            player_name=player_name,
-                            opponent_team=opponent_abbrev,
-                            is_home=is_home_team,
-                            game_date=game_date,
-                            season=season,
-                            injury_status=injury_status,
-                            teammates_out=teammates_out
-                        )
-                        
-                        if preds:
-                            # Get player ID for headshot
-                            from nba_api.stats.static import players as nba_players
-                            all_players = nba_players.get_players()
-                            player_info = next((p for p in all_players if p['full_name'] == player_name), None)
-                            player_id = player_info['id'] if player_info else None
-                            
-                            # Get position
-                            position = player.get('POSITION', 'G')
-                            
-                            # Format stats to match React component - ALL rounded to 1 decimal
-                            player_stats = {
-                                'points': round(float(preds.get('PTS', 0)), 1),
-                                'rebounds': round(float(preds.get('DREB', 0)) + float(preds.get('OREB', 0)), 1),
-                                'assists': round(float(preds.get('AST', 0)), 1),
-                                'steals': round(float(preds.get('STL', 0)), 1),
-                                'blocks': round(float(preds.get('BLK', 0)), 1),
-                                'fg': f"{float(preds.get('FGM', 0)) / (float(preds.get('FGM', 0)) / 0.47 + 0.1) * 100:.1f}",  # Estimate FG%
-                                'threePt': f"{float(preds.get('FG3M', 0)) / (float(preds.get('FG3M', 0)) / 0.37 + 0.1) * 100:.1f}",  # Estimate 3P%
-                                'ft': f"{float(preds.get('FTM', 0)) / (float(preds.get('FTM', 0)) / 0.80 + 0.1) * 100:.1f}"  # Estimate FT%
-                            }
-                            
-                            players_with_predictions.append({
-                                'name': player_name,
-                                'position': position,
-                                'image': f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png" if player_id else "https://via.placeholder.com/260x190?text=No+Image",
-                                'stats': player_stats,
-                                'team': team_abbrev,
-                                'is_home': is_home_team
-                            })
-                            print(f"  ✅ {player_name}")
-                        
-            except Exception as e:
-                print(f"  ⚠️  Error fetching roster for {team_abbrev}: {e}")
+        # Check if the player is actually active recently (last 45 days)
+        # This naturally filters out players with season-ending injuries,
+        # guys completely out of the rotation, and retired players.
+        last_date_str = str(df["GAME_DATE"].iloc[-1])
+        try:
+            last_date = datetime.strptime(last_date_str, "%Y-%m-%d")
+            days_since = (datetime.now() - last_date).days
+            if days_since > 45:
                 continue
+        except Exception:
+            continue
+            
+        team = str(df["PLAYER_TEAM"].iloc[-1] or "").strip().upper()
+        name = slug.replace("_", " ")
+        if team == home_u:
+            out.append((name, home_u, True))
+        elif team == away_u:
+            out.append((name, away_u, False))
+    return out
+
+
+@app.route("/")
+def index():
+    return jsonify(
+        {
+            "service": "nba-betting-api",
+            "docs": "Local-data mode — use /api/predict or /api/game/<id>/players?home=&away=",
+        }
+    )
+
+
+ESPN_TO_NBA_MAP = {
+    "GS": "GSW", "NO": "NOP", "NY": "NYK", 
+    "SA": "SAS", "UTAH": "UTA", "WSH": "WAS"
+}
+
+@app.route("/api/games/today")
+def get_todays_games():
+    """Fetch live NBA schedule from ESPN API."""
+    try:
+        resp = requests.get("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard", timeout=10)
+        data = resp.json()
         
-        print(f"✅ Generated predictions for {len(players_with_predictions)} players")
+        games = []
+        for ev in data.get("events", []):
+            try:
+                comp = ev["competitions"][0]
+                competitors = comp["competitors"]
+                home = next(c for c in competitors if c["homeAway"] == "home")["team"]
+                away = next(c for c in competitors if c["homeAway"] == "away")["team"]
+                
+                home_abbrev = ESPN_TO_NBA_MAP.get(home["abbreviation"].upper(), home["abbreviation"].upper())
+                away_abbrev = ESPN_TO_NBA_MAP.get(away["abbreviation"].upper(), away["abbreviation"].upper())
+                
+                games.append({
+                    "id": ev["id"],
+                    "time": ev["date"],
+                    "date": datetime.now().strftime("%Y-%m-%d"),
+                    "location": comp.get("venue", {}).get("fullName", "TBD"),
+                    "homeTeam": {
+                        "name": home.get("name", home_abbrev),
+                        "abbrev": home_abbrev,
+                        "logo": team_logo_url(home_abbrev)
+                    },
+                    "awayTeam": {
+                        "name": away.get("name", away_abbrev),
+                        "abbrev": away_abbrev,
+                        "logo": team_logo_url(away_abbrev)
+                    }
+                })
+            except Exception as e:
+                print(f"Error parsing game: {e}")
+                
+        return jsonify({
+            "success": True,
+            "games": sorted(games, key=lambda x: x["time"]),
+            "count": len(games)
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": f"Failed to fetch standard ESPN scoreboard: {str(e)}", "games": []}), 500
+
+
+@app.route("/api/injuries")
+def get_injuries():
+    """Get current injury report, optionally filtered by team."""
+    team = request.args.get("team", "").upper().strip()
+    injuries = _get_cached_injuries()
+
+    if team:
+        team_injuries = injuries.get(team, [])
+        return jsonify({
+            "success": True,
+            "team": team,
+            "injuries": team_injuries,
+            "count": len(team_injuries),
+        })
+
+    # Return all injuries
+    all_injuries = []
+    for team_list in injuries.values():
+        all_injuries.extend(team_list)
+    return jsonify({
+        "success": True,
+        "injuries": all_injuries,
+        "count": len(all_injuries),
+    })
+
+
+@app.route("/api/game/<game_id>/players")
+def get_game_players(game_id):
+    try:
+        home_abbrev = request.args.get("home")
+        away_abbrev = request.args.get("away")
+        if not home_abbrev or not away_abbrev:
+            return jsonify({"success": False, "error": "Missing home or away query param"}), 400
+
+        # Parse optional manual exclusions from the frontend
+        exclude_param = request.args.get("excludePlayers", "")
+        manually_excluded = [p.strip() for p in exclude_param.split(",") if p.strip()] if exclude_param else []
+
+        eastern = pytz.timezone("US/Eastern")
+        today = datetime.now(eastern)
+        game_date = today.strftime("%Y-%m-%d")
         
-        # Separate into home and away players
-        home_players = [p for p in players_with_predictions if p['is_home']]
-        away_players = [p for p in players_with_predictions if not p['is_home']]
-        
-        # Calculate predicted team scores using LEARNED parameters from 2024-25 analysis
-        # Analysis showed: Top 5 = 82.8%, Top 8 = 97.7% of team score
-        home_score = sum([p['stats']['points'] for p in home_players]) if home_players else 0
-        away_score = sum([p['stats']['points'] for p in away_players]) if away_players else 0
-        
-        # Determine which scaling to use based on number of players
+        # Check Redis Cache for baseline predictions
+        cache_key = f"game:{game_id}:baseline:{game_date}"
+        if not manually_excluded and redis_client:
+            try:
+                cached = redis_client.get(cache_key)
+                if cached:
+                    return jsonify(json.loads(cached))
+            except Exception as e:
+                print(f"Redis read error: {e}")
+
+        season = predictor._get_current_season()
+
+        # Step 1: Get full roster from local data
+        roster = scan_players_on_teams(models_dir, home_abbrev, away_abbrev)
+        roster_names = [name for name, _, _ in roster]
+
+        # Step 2: Fetch live injuries for both teams
+        injuries = _get_cached_injuries()
+        home_injuries = injuries.get(home_abbrev.upper(), [])
+        away_injuries = injuries.get(away_abbrev.upper(), [])
+
+        # Build lookup: roster_name → injury info
+        injury_map: Dict[str, Dict[str, Any]] = {}
+        out_players: Dict[str, List[str]] = {home_abbrev.upper(): [], away_abbrev.upper(): []}
+
+        for inj in home_injuries + away_injuries:
+            espn_name = inj.get("player_name", "")
+            matched = _match_injury_to_roster(espn_name, roster_names)
+            if matched:
+                injury_map[matched] = inj
+                if inj.get("status", "").lower() == "out":
+                    team = inj.get("team_abbrev", "")
+                    if team in out_players:
+                        out_players[team].append(matched)
+
+        # Add manually excluded players to out lists
+        for name in manually_excluded:
+            for roster_name, team_abbrev, _ in roster:
+                if roster_name.lower() == name.lower() or roster_name.replace(" ", "_").lower() == name.lower():
+                    if team_abbrev in out_players and roster_name not in out_players[team_abbrev]:
+                        out_players[team_abbrev].append(roster_name)
+                    if roster_name not in injury_map:
+                        injury_map[roster_name] = {
+                            "status": "Out",
+                            "injury_type": "Manual Exclusion",
+                            "detail": "Excluded by user",
+                        }
+
+        # Step 3: Generate predictions for active players only
+        players_with_predictions = []
+        injury_report = []  # Sidelined players for the frontend
+
+        for player_name, team_abbrev, is_home in roster:
+            opponent_abbrev = away_abbrev if is_home else home_abbrev
+            inj_info = injury_map.get(player_name)
+
+            # Determine this player's injury status
+            player_status = "Healthy"
+            if inj_info:
+                player_status = inj_info.get("status", "Healthy")
+
+            # If player is Out, add to injury report and skip prediction
+            if player_status.lower() == "out":
+                injury_report.append({
+                    "name": player_name,
+                    "team": team_abbrev,
+                    "is_home": is_home,
+                    "status": "Out",
+                    "injury_type": inj_info.get("injury_type", "") if inj_info else "",
+                    "detail": inj_info.get("detail", "") if inj_info else "",
+                    "side": inj_info.get("side", "") if inj_info else "",
+                    "headshot_url": inj_info.get("headshot_url", "") if inj_info else "",
+                })
+                continue
+
+            # Get teammates who are out (same team)
+            same_team_out = out_players.get(team_abbrev, [])
+
+            preds = predictor.predict_player_stats(
+                player_name=player_name,
+                opponent_team=opponent_abbrev,
+                is_home=is_home,
+                game_date=game_date,
+                season=season,
+                injury_status=player_status,
+                teammates_out=same_team_out,
+            )
+            if not preds:
+                continue
+
+            slug = player_name.replace(" ", "_")
+            csv_path = models_dir / slug / f"{slug}_data.csv"
+            position = "G"
+            try:
+                position = str(pd.read_csv(csv_path).iloc[-1].get("position", "G"))
+            except Exception:
+                pass
+
+            # Use ESPN headshot if available, otherwise placeholder
+            headshot = PLACEHOLDER_HEADSHOT
+            if inj_info and inj_info.get("headshot_url"):
+                headshot = inj_info["headshot_url"]
+
+            player_entry = {
+                "name": player_name,
+                "position": position,
+                "image": headshot,
+                "stats": {
+                    "points": round(float(preds.get("PTS", 0)), 1),
+                    "rebounds": round(
+                        float(preds.get("DREB", 0)) + float(preds.get("OREB", 0)), 1
+                    ),
+                    "assists": round(float(preds.get("AST", 0)), 1),
+                    "steals": round(float(preds.get("STL", 0)), 1),
+                    "blocks": round(float(preds.get("BLK", 0)), 1),
+                    "fg": "—",
+                    "threePt": "—",
+                    "ft": "—",
+                },
+                "team": team_abbrev,
+                "is_home": is_home,
+            }
+
+            # Annotate injury status for Day-To-Day / Probable players
+            if inj_info and player_status.lower() != "healthy":
+                player_entry["injuryStatus"] = player_status
+                player_entry["injuryDetail"] = f"{inj_info.get('injury_type', '')} ({inj_info.get('side', '')})".strip(" ()")
+
+            players_with_predictions.append(player_entry)
+
+        home_players = [p for p in players_with_predictions if p["is_home"]]
+        away_players = [p for p in players_with_predictions if not p["is_home"]]
+
+        home_score = sum(p["stats"]["points"] for p in home_players)
+        away_score = sum(p["stats"]["points"] for p in away_players)
         if len(home_players) >= 8:
-            # Have rotation players (top 8-10) = ~97.7% of score
-            # Add small deep bench contribution (learned: 2.5 points)
             home_final = home_score + 3
             away_final = away_score + 3
         elif len(home_players) >= 5:
-            # Have top 5 starters = ~82.8% of score
-            # Scale up: total = top_5 / 0.828
-            home_final = home_score / 0.828
-            away_final = away_score / 0.828
+            home_final = home_score / 0.828 if home_score else 104
+            away_final = away_score / 0.828 if away_score else 104
         else:
-            # Not enough data, use average (103.9 points)
-            home_final = 104
-            away_final = 104
-        
-        # Round all player stats to 1 decimal place
-        for player in players_with_predictions:
-            if 'stats' in player:
-                for stat_key in player['stats']:
-                    if isinstance(player['stats'][stat_key], (int, float)):
-                        player['stats'][stat_key] = round(player['stats'][stat_key], 1)
-        
-        # Save predictions for historical comparison
+            home_final = home_score or 104
+            away_final = away_score or 104
+
         try:
-            storage.save_game_prediction(
-                game_id=game_id,
-                game_date=today.strftime('%Y-%m-%d'),
-                home_team=home_abbrev,
-                away_team=away_abbrev,
-                home_predicted_score=round(home_final, 1),
-                away_predicted_score=round(away_final, 1),
-                player_predictions=players_with_predictions
-            )
+            _save_prediction({
+                "game_id": game_id,
+                "game_date": game_date,
+                "home_team": home_abbrev,
+                "away_team": away_abbrev,
+                "home_predicted_score": round(float(home_final), 1),
+                "away_predicted_score": round(float(away_final), 1),
+                "player_predictions": players_with_predictions,
+                "injury_report": injury_report,
+            })
         except Exception as save_error:
-            print(f"⚠️  Could not save prediction: {save_error}")
-        
-        # Format to match React expectations
-        return jsonify({
-            'success': True,
-            'homeTeam': {
-                'name': home_players[0]['team'] if home_players else home_abbrev,
-                'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg",
-                'predictedScore': round(home_final)
+            print(f"Could not save prediction: {save_error}")
+
+        response_data = {
+            "success": True,
+            "homeTeam": {
+                "name": home_abbrev,
+                "logo": team_logo_url(home_abbrev),
+                "predictedScore": round(home_final),
             },
-            'awayTeam': {
-                'name': away_players[0]['team'] if away_players else away_abbrev,
-                'logo': f"https://cdn.nba.com/logos/nba/{away_team_id}/global/L/logo.svg",
-                'predictedScore': round(away_final)
+            "awayTeam": {
+                "name": away_abbrev,
+                "logo": team_logo_url(away_abbrev),
+                "predictedScore": round(away_final),
             },
-            'date': today.strftime('%B %d, %Y'),
-            'time': '7:30 PM ET',  # Can enhance with actual game time
-            'location': 'NBA Arena',
-            'homePlayers': [{'name': p['name'], 'position': p['position'], 'image': p['image'], 'stats': p['stats']} for p in home_players],
-            'awayPlayers': [{'name': p['name'], 'position': p['position'], 'image': p['image'], 'stats': p['stats']} for p in away_players]
-        })
-        
+            "date": today.strftime("%B %d, %Y"),
+            "time": "TBD",
+            "location": "",
+            "homePlayers": [
+                {"name": p["name"], "position": p["position"], "image": p["image"], "stats": p["stats"],
+                 **({"injuryStatus": p["injuryStatus"], "injuryDetail": p.get("injuryDetail", "")} if "injuryStatus" in p else {})}
+                for p in home_players
+            ],
+            "awayPlayers": [
+                {"name": p["name"], "position": p["position"], "image": p["image"], "stats": p["stats"],
+                 **({"injuryStatus": p["injuryStatus"], "injuryDetail": p.get("injuryDetail", "")} if "injuryStatus" in p else {})}
+                for p in away_players
+            ],
+            "injuryReport": injury_report,
+        }
+
+        if not manually_excluded and redis_client:
+            try:
+                # Cache for 12 hours
+                redis_client.setex(cache_key, 12 * 3600, json.dumps(response_data))
+            except Exception as e:
+                print(f"Redis set error: {e}")
+
+        return jsonify(response_data)
+
     except Exception as e:
-        print(f"❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
-@app.route('/api/predict', methods=['POST'])
+@app.route("/api/predict", methods=["POST"])
 def get_prediction():
-    """Generate prediction for a specific player"""
     try:
         data = request.json
-        
-        player_name = data.get('player_name')
-        opponent = data.get('opponent')
-        is_home = data.get('is_home', True)
-        game_date = data.get('game_date', datetime.now().strftime('%Y-%m-%d'))
-        season = data.get('season', predictor._get_current_season())
-        injury_status = data.get('injury_status', 'Healthy')
-        teammates_out = data.get('teammates_out', [])
-        
-        print(f"🎯 Predicting for {player_name} vs {opponent} (home={is_home})")
-        
-        # Generate prediction
+        player_name = data.get("player_name")
+        opponent = data.get("opponent")
+        is_home = data.get("is_home", True)
+        game_date = data.get("game_date", datetime.now().strftime("%Y-%m-%d"))
+        season = data.get("season", predictor._get_current_season())
+        injury_status = data.get("injury_status", "Healthy")
+        teammates_out = data.get("teammates_out", [])
+
         predictions = predictor.predict_player_stats(
             player_name=player_name,
             opponent_team=opponent,
@@ -366,267 +538,126 @@ def get_prediction():
             game_date=game_date,
             season=season,
             injury_status=injury_status,
-            teammates_out=teammates_out
+            teammates_out=teammates_out,
         )
-        
+
         if predictions:
-            print(f"  ✅ Generated predictions for {player_name}")
-            return jsonify({
-                'success': True,
-                'player': player_name,
-                'predictions': predictions
-            })
-        else:
-            print(f"  ❌ No model found for {player_name}")
-            return jsonify({
-                'success': False,
-                'error': f'No trained model found for {player_name}'
-            }), 404
-            
+            return jsonify({"success": True, "player": player_name, "predictions": predictions})
+        return jsonify({"success": False, "error": f"No trained model found for {player_name}"}), 404
+
     except Exception as e:
-        print(f"  ❌ Error: {str(e)}")
         import traceback
+
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
-@app.route('/api/generate-all-predictions', methods=['POST'])
+@app.route("/api/generate-all-predictions", methods=["POST"])
 def generate_all_predictions():
-    """Auto-generate predictions for ALL of today's games"""
-    try:
-        from nba_api.stats.endpoints import scoreboardv2
-        from nba_api.stats.static import teams as nba_teams
-        import pytz
-        
-        eastern = pytz.timezone('US/Eastern')
-        today = datetime.now(eastern)
-        date_str = today.strftime('%m/%d/%Y')
-        
-        print(f"🤖 Auto-generating predictions for all games on {date_str}")
-        
-        # Fetch today's games
-        scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
-        games_data = scoreboard.get_normalized_dict()
-        
-        all_teams = nba_teams.get_teams()
-        team_lookup = {team['id']: team for team in all_teams}
-        
-        generated_count = 0
-        skipped_count = 0
-        
-        if 'GameHeader' in games_data:
-            for game in games_data['GameHeader']:
-                game_id = game.get('GAME_ID')
-                home_team_id = game.get('HOME_TEAM_ID')
-                visitor_team_id = game.get('VISITOR_TEAM_ID')
-                
-                # Check if we already have predictions for this game
-                existing = storage.get_game_prediction(game_id)
-                if existing:
-                    print(f"  ⏭️  Skipping {game_id} (already have predictions)")
-                    skipped_count += 1
-                    continue
-                
-                # Get team abbreviations
-                home_team = team_lookup.get(home_team_id, {})
-                away_team = team_lookup.get(visitor_team_id, {})
-                home_abbrev = home_team.get('abbreviation', 'HOME')
-                away_abbrev = away_team.get('abbreviation', 'AWAY')
-                
-                print(f"  🔮 Generating: {away_abbrev} @ {home_abbrev} ({game_id})")
-                
-                # Generate predictions by calling the existing endpoint logic
-                # (We'll extract this to a helper function to avoid duplication)
-                try:
-                    # Make internal request to game players endpoint
-                    import requests
-                    response = requests.get(
-                        f'http://localhost:5001/api/game/{game_id}/players?home={home_abbrev}&away={away_abbrev}',
-                        timeout=30
-                    )
-                    if response.status_code == 200:
-                        generated_count += 1
-                        print(f"  ✅ Generated predictions for {game_id}")
-                    else:
-                        print(f"  ⚠️  Failed to generate for {game_id}")
-                except Exception as e:
-                    print(f"  ❌ Error generating {game_id}: {e}")
-        
-        return jsonify({
-            'success': True,
-            'generated': generated_count,
-            'skipped': skipped_count,
-            'total': generated_count + skipped_count
-        })
-        
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+    return jsonify(
+        {
+            "success": False,
+            "generated": 0,
+            "message": "Bulk auto-generation from a live NBA feed is disabled. Call /api/game/<id>/players?home=&away= per matchup.",
+        }
+    )
 
 
-@app.route('/api/history/games')
+@app.route("/api/history/games")
 def get_historical_games():
-    """Get completed games with actual scores for history"""
     try:
-        from nba_api.stats.endpoints import scoreboardv2, leaguegamefinder
-        import pytz
-        
-        # Get yesterday's games (Oct 21, 2025)
-        eastern = pytz.timezone('US/Eastern')
-        yesterday = datetime.now(eastern) - timedelta(days=1)
-        date_str = yesterday.strftime('%m/%d/%Y')
-        
-        print(f"📅 Fetching completed games for: {date_str}")
-        
-        # Fetch scoreboard for yesterday
-        scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
-        games_data = scoreboard.get_normalized_dict()
-        
-        # Get all NBA teams for ID lookup
-        from nba_api.stats.static import teams as nba_teams
-        all_teams = nba_teams.get_teams()
-        team_lookup = {team['id']: team for team in all_teams}
-        
+        preds = _load_prediction_history()
         historical_games = []
-        
-        # Parse games with actual scores
-        if 'GameHeader' in games_data:
-            for game in games_data['GameHeader']:
-                game_id = game.get('GAME_ID')
-                home_team_id = game.get('HOME_TEAM_ID')
-                visitor_team_id = game.get('VISITOR_TEAM_ID')
-                
-                home_team_data = team_lookup.get(home_team_id, {})
-                away_team_data = team_lookup.get(visitor_team_id, {})
-                
-                # Get actual scores from LineScore
-                home_score = 0
-                away_score = 0
-                
-                if 'LineScore' in games_data:
-                    for team in games_data['LineScore']:
-                        if team.get('GAME_ID') == game_id:
-                            if team.get('TEAM_ID') == home_team_id:
-                                home_score = team.get('PTS') or 0
-                            elif team.get('TEAM_ID') == visitor_team_id:
-                                away_score = team.get('PTS') or 0
-                
-                # Try to load saved predictions for this game
-                saved_prediction = storage.get_game_prediction(game_id)
-                home_pred_score = None
-                away_pred_score = None
-                score_accuracy = None
-                avg_points_diff = None
-                player_stats_accuracy = None
-                
-                if saved_prediction:
-                    home_pred_score = saved_prediction.get('home_predicted_score')
-                    away_pred_score = saved_prediction.get('away_predicted_score')
-                    
-                    # Use actual scores from saved prediction if available (more reliable than API)
-                    saved_home_actual = saved_prediction.get('home_actual_score')
-                    saved_away_actual = saved_prediction.get('away_actual_score')
-                    
-                    if saved_home_actual is not None and saved_home_actual > 0:
-                        home_score = saved_home_actual
-                    if saved_away_actual is not None and saved_away_actual > 0:
-                        away_score = saved_away_actual
-                    
-                    # Get pre-calculated accuracy from storage
-                    score_accuracy = saved_prediction.get('score_accuracy')
-                    player_stats_accuracy = saved_prediction.get('player_stats_accuracy')
-                    avg_points_diff = saved_prediction.get('avg_points_diff')
-                
-                historical_games.append({
-                    'id': game_id,
-                    'homeTeam': {
-                        'name': home_team_data.get('full_name', 'Home Team'),
-                        'abbrev': home_team_data.get('abbreviation', 'HOME'),
-                        'logo': f"https://cdn.nba.com/logos/nba/{home_team_id}/global/L/logo.svg",
-                        'predictedScore': home_pred_score,
-                        'actualScore': home_score
+        for p in preds:
+            historical_games.append(
+                {
+                    "id": p.get("game_id"),
+                    "homeTeam": {
+                        "name": p.get("home_team", ""),
+                        "abbrev": p.get("home_team", ""),
+                        "logo": team_logo_url(str(p.get("home_team", ""))),
+                        "predictedScore": p.get("home_predicted_score"),
+                        "actualScore": p.get("home_actual_score") or 0,
                     },
-                    'awayTeam': {
-                        'name': away_team_data.get('full_name', 'Away Team'),
-                        'abbrev': away_team_data.get('abbreviation', 'AWAY'),
-                        'logo': f"https://cdn.nba.com/logos/nba/{visitor_team_id}/global/L/logo.svg",
-                        'predictedScore': away_pred_score,
-                        'actualScore': away_score
+                    "awayTeam": {
+                        "name": p.get("away_team", ""),
+                        "abbrev": p.get("away_team", ""),
+                        "logo": team_logo_url(str(p.get("away_team", ""))),
+                        "predictedScore": p.get("away_predicted_score"),
+                        "actualScore": p.get("away_actual_score") or 0,
                     },
-                    'time': game.get('GAME_STATUS_TEXT', 'Final'),
-                    'date': yesterday.strftime('%B %d, %Y'),
-                    'location': 'NBA Arena',
-                    'accuracy': {
-                        'scoreAccuracy': score_accuracy,
-                        'playerStatsAccuracy': player_stats_accuracy,
-                        'avgPointsDiff': avg_points_diff
-                    }
-                })
-        
-        print(f"✅ Found {len(historical_games)} completed games")
-        
-        return jsonify({
-            'success': True,
-            'games': historical_games
-        })
-        
+                    "time": "Saved",
+                    "date": p.get("game_date", ""),
+                    "location": "",
+                    "accuracy": {
+                        "scoreAccuracy": p.get("score_accuracy"),
+                        "playerStatsAccuracy": p.get("player_stats_accuracy"),
+                        "avgPointsDiff": p.get("avg_points_diff"),
+                    },
+                }
+            )
+        return jsonify({"success": True, "games": historical_games})
     except Exception as e:
-        print(f"❌ Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
-@app.route('/api/analyze-bet', methods=['POST'])
+@app.route("/api/analyze-bet", methods=["POST"])
 def analyze_bet():
-    """Analyze a betting opportunity"""
     try:
         data = request.json
-        
-        # Get recommendation
-        rec = recommender.recommend_bet(
-            player=data.get('player'),
-            opponent=data.get('opponent'),
-            is_home=data.get('is_home', True),
-            game_date=data.get('game_date', datetime.now().strftime('%Y-%m-%d')),
-            season=data.get('season', predictor._get_current_season()),
-            stat=data.get('stat'),
-            line=float(data.get('line')),
-            over_odds=int(data.get('over_odds')),
-            injury_status=data.get('injury_status', 'Healthy'),
-            teammates_out=data.get('teammates_out', [])
+        player_name = data.get("player")
+        stat_type = data.get("stat")
+        line = float(data.get("line", 0))
+        odds = int(data.get("over_odds", -110))
+
+        # Use the predictor to get the expected stat value
+        prediction = predictor.predict_player_stats(
+            player_name=player_name,
+            opponent_team=data.get("opponent", ""),
+            is_home=data.get("is_home", True),
+            game_date=data.get("game_date", datetime.now().strftime("%Y-%m-%d")),
+            season=data.get("season", predictor._get_current_season()),
         )
-        
+
+        if not prediction or stat_type not in prediction:
+            return jsonify({"success": False, "error": f"Cannot predict {stat_type} for {player_name}"}), 404
+
+        predicted_value = prediction[stat_type]
+        edge = predicted_value - line
+
+        if abs(edge) < 0.5:
+            recommendation = "no_edge"
+            confidence = "low"
+        elif edge > 2.0:
+            recommendation = "over"
+            confidence = "high"
+        elif edge > 0.5:
+            recommendation = "over"
+            confidence = "medium"
+        elif edge < -2.0:
+            recommendation = "under"
+            confidence = "high"
+        else:
+            recommendation = "under"
+            confidence = "medium"
+
         return jsonify({
-            'success': True,
-            'recommendation': rec
+            "success": True,
+            "recommendation": {
+                "player": player_name,
+                "stat": stat_type,
+                "line": line,
+                "predicted": round(predicted_value, 1),
+                "edge": round(edge, 1),
+                "recommendation": recommendation,
+                "confidence": confidence,
+            },
         })
-        
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
-if __name__ == '__main__':
-    print("🏀 NBA Betting Assistant")
-    print("=" * 80)
-    print("Starting server at http://localhost:5001")
-    print("Press Ctrl+C to stop")
-    print("Note: Using port 5001 (port 5000 is taken by AirPlay)")
-    print()
-    
-    app.run(debug=True, port=5001, host='127.0.0.1')
-
+if __name__ == "__main__":
+    print("NBA Betting API (local-data mode)")
+    print("http://localhost:5001")
+    app.run(debug=True, port=5001, host="127.0.0.1")
