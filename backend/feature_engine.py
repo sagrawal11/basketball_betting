@@ -546,8 +546,7 @@ class FeatureEngine:
             try:
                 df.to_parquet(pq, index=False)
             except Exception as e:
-                logger.warning("Parquet save failed (%s), writing CSV", e)
-                df.to_csv(out_dir / f"{slug}_features.csv", index=False)
+                logger.warning("Parquet save failed for %s: %s", slug, e)
         return df
 
     def _clean_output_columns(self, df: pd.DataFrame) -> pd.DataFrame:

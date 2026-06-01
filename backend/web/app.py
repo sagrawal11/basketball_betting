@@ -48,14 +48,13 @@ models_dir = data_dir / "player_data"
 predictions_dir = backend_dir / "data" / "predictions"
 
 try:
-    from utils.storage import download_directory
-    from config.paths import GLOBAL_MODEL_DIR, PLAYER_DATA_DIR
+    from utils.storage import download_api_bundle
+    from config.paths import GLOBAL_MODEL_DIR
     bucket = os.environ.get("R2_BUCKET_NAME")
     if bucket:
         if not list(GLOBAL_MODEL_DIR.glob("*.joblib")):
-            print("Models not found locally. Downloading from R2...")
-            download_directory(bucket, "models", GLOBAL_MODEL_DIR)
-            download_directory(bucket, "player_data", PLAYER_DATA_DIR)
+            print("Models not found locally. Downloading API bundle from R2...")
+            download_api_bundle(bucket)
             print("Download complete.")
 except Exception as e:
     print(f"Failed to sync from R2: {e}")

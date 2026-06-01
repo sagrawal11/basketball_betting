@@ -122,13 +122,29 @@ def step_rebuild_all_features(dry_run: bool, max_players: int | None) -> None:
         logger.info("[dry-run] rebuild features for player_data folders")
         return
     from feature_engine import default_engine
+    import pandas as pd
+    from datetime import datetime, timedelta
 
     fe = default_engine()
     dirs = sorted([p for p in PLAYER_DATA_DIR.iterdir() if p.is_dir()])
     if max_players:
         dirs = dirs[:max_players]
-    ok = 0
+        
+    cutoff = datetime.now() - timedelta(days=365)
+    active_dirs = []
     for d in dirs:
+        csv_path = d / f"{d.name}_data.csv"
+        if csv_path.exists():
+            try:
+                df = pd.read_csv(csv_path, usecols=["GAME_DATE"])
+                if pd.to_datetime(df["GAME_DATE"].iloc[-1]) >= cutoff:
+                    active_dirs.append(d)
+            except Exception:
+                continue
+                
+    logger.info("Rebuilding features for %d active players (past 365 days)...", len(active_dirs))
+    ok = 0
+    for d in active_dirs:
         name = d.name.replace("_", " ")
         try:
             out = fe.build_training_features(name, save_parquet=True)
@@ -136,7 +152,7 @@ def step_rebuild_all_features(dry_run: bool, max_players: int | None) -> None:
                 ok += 1
         except Exception as e:
             logger.warning("Features failed for %s: %s", name, e)
-    logger.info("Feature rebuild finished: %s / %s players", ok, len(dirs))
+    logger.info("Feature rebuild finished: %s / %s players", ok, len(active_dirs))
 
 
 def step_train_global(dry_run: bool, max_players: int | None) -> None:
@@ -151,12 +167,13 @@ def step_cache_baselines(dry_run: bool) -> None:
 
 
 def step_upload_artifacts(dry_run: bool) -> None:
+    """Upload the cleaned ML dataset to R2 (~2.8 GB)."""
     if dry_run:
-        logger.info("[dry-run] upload artifacts to R2")
+        logger.info("[dry-run] upload full training bundle to R2")
         return
         
     try:
-        from utils.storage import upload_directory
+        from utils.storage import upload_full_training_bundle
         import os
         
         bucket = os.environ.get("R2_BUCKET_NAME")
@@ -164,12 +181,8 @@ def step_upload_artifacts(dry_run: bool) -> None:
             logger.info("R2_BUCKET_NAME not set, skipping upload.")
             return
             
-        logger.info("Uploading global models...")
-        from config.paths import GLOBAL_MODEL_DIR, PLAYER_DATA_DIR
-        upload_directory(GLOBAL_MODEL_DIR, bucket, prefix="models")
-        
-        logger.info("Uploading player features...")
-        upload_directory(PLAYER_DATA_DIR, bucket, prefix="player_data")
+        logger.info("Uploading full training bundle (~2.8 GB)...")
+        upload_full_training_bundle(bucket)
         
     except Exception as e:
         logger.warning("Failed to upload artifacts: %s", e)

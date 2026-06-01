@@ -1,4 +1,12 @@
-name: Nightly NBA Pipeline
+name: Full Daily Retraining Pipeline
+
+# Runs the complete ML pipeline every night:
+# 1. Downloads the 2.8 GB dataset from R2
+# 2. Scrapes new box scores and rebuilds features (for active players)
+# 3. Retrains the global ML models
+# 4. Caches predictions in Redis
+# 5. Uploads the updated 2.8 GB dataset back to R2
+# This workflow uses ~25 min/run = ~750 of 2,000 free minutes per month.
 
 on:
   schedule:
@@ -7,8 +15,9 @@ on:
   workflow_dispatch: # Allow manual trigger from the GitHub UI
 
 jobs:
-  run-pipeline:
+  daily-update:
     runs-on: ubuntu-latest
+    timeout-minutes: 45  # Safety: kill if something hangs
     
     steps:
       - name: Checkout code
@@ -26,17 +35,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r config/requirements.txt
           
-      - name: Setup Kaggle API
+      - name: Download Full Dataset from R2 (~2.8 GB)
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+        run: |
+          cd backend
+          python -c "
+          from utils.storage import download_full_training_bundle
+          import os
+          bucket = os.environ.get('R2_BUCKET_NAME')
+          if bucket:
+              download_full_training_bundle(bucket)
+          else:
+              print('R2_BUCKET_NAME not set')
+          "
+      
+      - name: Run Full Pipeline (Scrape -> Features -> Train -> Sync)
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-        run: |
-          mkdir -p ~/.kaggle
-          echo "{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}" > ~/.kaggle/kaggle.json
-          chmod 600 ~/.kaggle/kaggle.json
-          
-      - name: Run Nightly Pipeline (Extract, Build, Train, Cache, Upload)
-        env:
           UPSTASH_REDIS_URL: ${{ secrets.UPSTASH_REDIS_URL }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -44,4 +64,7 @@ jobs:
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
         run: |
           cd backend
-          python pipeline/nightly.py --rebuild-features --fit-archetypes --retrain-global
+          # This runs: Kaggle download -> B-Ref scrape -> DvP update ->
+          # feature rebuild (active players) -> global model train ->
+          # cache baselines -> R2 upload.
+          python pipeline/nightly.py --rebuild-features --retrain-global
