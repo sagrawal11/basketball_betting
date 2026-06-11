@@ -28,6 +28,14 @@ logger = logging.getLogger(__name__)
 class NBAPredictor:
     """Global-model predictor compatible with the Flask app expectations."""
 
+    # High-signal managed features whose silent 0.0 fill is most damaging — a
+    # missing/NaN value here is far from the training distribution.
+    SKEW_SENSITIVE_PREFIXES = (
+        "ARCH_PROB_", "OPP_PRIOR_AVG_", "KG_PREV_", "KG_OPP_PREV_", "DVP_",
+    )
+    # Warn once a non-trivial fraction of managed features had to be 0.0-filled.
+    SKEW_WARN_FRACTION = 0.20
+
     def __init__(
         self,
         data_dir: Optional[str] = None,
@@ -50,6 +58,40 @@ class NBAPredictor:
             p_res = self.artifacts_dir / f"residuals_{t}.joblib"
             if p_res.exists():
                 self.residual_models[t] = joblib.load(p_res)
+
+    def _feature_skew_report(self, row: pd.Series) -> Dict[str, Any]:
+        """Which trained feature_columns would be silently filled with 0.0 for
+        this inference row — counting BOTH columns absent from the row and
+        columns present but NaN/non-numeric (both become 0.0 downstream)."""
+        cols = list(self.feature_columns or [])
+        if not cols:
+            return {"n_total": 0, "n_filled": 0, "fraction_filled": 0.0, "sensitive_filled": []}
+        aligned = pd.to_numeric(row.reindex(cols), errors="coerce")
+        filled = [c for c in cols if pd.isna(aligned[c])]
+        sensitive = [c for c in filled if c.startswith(self.SKEW_SENSITIVE_PREFIXES)]
+        return {
+            "n_total": len(cols),
+            "n_filled": len(filled),
+            "fraction_filled": len(filled) / len(cols),
+            "sensitive_filled": sensitive,
+        }
+
+    def _check_feature_skew(self, player_name: str, row: pd.Series) -> Dict[str, Any]:
+        """Surface train-serve skew: emit a structured WARNING when a non-trivial
+        fraction of managed features were missing/NaN and filled with 0.0."""
+        report = self._feature_skew_report(row)
+        if report["n_total"] and report["fraction_filled"] >= self.SKEW_WARN_FRACTION:
+            logger.warning(
+                "Train-serve skew risk for %s: %d/%d managed features (%.0f%%) "
+                "were missing/NaN and filled with 0.0; %d sensitive (%s)",
+                player_name,
+                report["n_filled"],
+                report["n_total"],
+                100 * report["fraction_filled"],
+                len(report["sensitive_filled"]),
+                ", ".join(report["sensitive_filled"][:6]) or "none",
+            )
+        return report
 
     def _get_current_season(self) -> str:
         now = datetime.now()
@@ -87,11 +129,10 @@ class NBAPredictor:
             
         # Reindex to absolute perfection vs the training columns
         sub = row.reindex(self.feature_columns)
-        
-        # Check for missing columns that are critical
-        missing = [c for c in self.feature_columns if c not in row.index]
-        if missing:
-            logger.debug("Inference is missing %d managed columns (filling 0.0)", len(missing))
+
+        # Train-serve skew guard: surface (not silently swallow) when managed
+        # features had to be 0.0-filled, especially high-signal ones.
+        self._check_feature_skew(player_name, row)
 
         # Convert to DataFrame with columns so LGBM is happy and doesn't warn about feature names
         X_df = pd.DataFrame([sub])
