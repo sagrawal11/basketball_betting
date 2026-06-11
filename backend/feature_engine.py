@@ -242,38 +242,44 @@ class FeatureEngine:
         return x
 
     def _add_home_away_rolling_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Prior-only rolling means on home-only vs away-only game subsets (merge_asof backward)."""
-        out = df.copy()
+        """Prior-only rolling means computed WITHIN each venue.
+
+        ``HA_HOME_*`` is populated only on home-game rows (the mean of that
+        player's prior HOME games) and ``HA_AWAY_*`` only on away-game rows; the
+        opposite venue's columns stay NaN. This avoids the cross-contamination
+        of the old merge_asof-on-date approach, where every row (home or away)
+        received the most recent prior values from BOTH venues — so a home game
+        carried away-form and vice-versa, and same-day rows were collapsed.
+        """
+        out = df.copy().reset_index(drop=True)
         if "IS_HOME" not in out.columns:
             return out
         cols_use = [c for c in HA_ROLL_COLS if c in out.columns]
         if not cols_use:
             return out
-        out["_dt"] = pd.to_datetime(out["GAME_DATE"]).dt.normalize()
-        out["_idx"] = np.arange(len(out), dtype=np.int64)
-        acc = out.sort_values("_dt").copy()
+
+        # Pre-create the full HA schema so the columns are deterministically
+        # present (other-venue rows simply remain NaN).
+        for side_name in ("HOME", "AWAY"):
+            for col in cols_use:
+                for w in HA_ROLL_WINDOWS:
+                    out[f"HA_{side_name}_{col}_L{w}"] = np.nan
+
+        dt = pd.to_datetime(out["GAME_DATE"]).dt.normalize()
+        chrono = dt.sort_values(kind="stable").index  # chronological row labels
+
         for side_name, home_val in (("HOME", 1), ("AWAY", 0)):
-            sub = out[out["IS_HOME"] == home_val].sort_values("_dt").copy()
-            if len(sub) < 2:
+            mask = (out.loc[chrono, "IS_HOME"] == home_val).to_numpy()
+            side_idx = chrono[mask]
+            if len(side_idx) == 0:
                 continue
             for col in cols_use:
-                shifted = sub[col].shift(1)
+                # shift(1) over this venue's chronological games -> prior only.
+                shifted = out.loc[side_idx, col].shift(1)
                 for w in HA_ROLL_WINDOWS:
-                    sub[f"HA_{side_name}_{col}_L{w}"] = shifted.rolling(
-                        w, min_periods=max(2, min(3, w))
-                    ).mean()
-            keep = ["_dt"] + [c for c in sub.columns if c.startswith(f"HA_{side_name}_")]
-            sub = sub[keep].drop_duplicates(subset=["_dt"], keep="last")
-            acc = pd.merge_asof(
-                acc.sort_values("_dt"),
-                sub.sort_values("_dt"),
-                on="_dt",
-                direction="backward",
-                allow_exact_matches=False
-            )
-        acc = acc.sort_values("_idx").drop(columns=["_idx"], errors="ignore")
-        acc = acc.drop(columns=["_dt"], errors="ignore")
-        return acc
+                    rolled = shifted.rolling(w, min_periods=max(2, min(3, w))).mean()
+                    out.loc[side_idx, f"HA_{side_name}_{col}_L{w}"] = rolled
+        return out
 
     def _prepare_raw(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.copy()
