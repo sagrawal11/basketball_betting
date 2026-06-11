@@ -53,6 +53,12 @@ def _position_group(pos: Any) -> str:
     return "G"
 
 
+# Fixed, frame-independent encoding for position groups. Order is arbitrary but
+# must stay constant so the same position always maps to the same integer across
+# players and between training and inference (no per-frame Categorical codes).
+POSITION_GROUP_ENCODING = {"G": 0, "F": 1, "C": 2}
+
+
 def _load_team_stats(path: Path) -> Optional[pd.DataFrame]:
     """Prefer `all_team_stats.parquet` next to CSV; fallback to CSV."""
     path = Path(path)
@@ -279,10 +285,13 @@ class FeatureEngine:
             df = df.drop(columns=["WL"])
         if "position" in df.columns:
             df["POSITION_GROUP"] = df["position"].apply(_position_group)
-            df["position_encoded"] = pd.Categorical(df["position"].astype(str)).codes
         elif "POSITION_GROUP" not in df.columns:
             df["POSITION_GROUP"] = "G"
-            df["position_encoded"] = 0
+        # Stable encoding derived from the normalized group via a fixed mapping —
+        # never per-frame Categorical codes (which drift with frame content).
+        df["position_encoded"] = (
+            df["POSITION_GROUP"].map(POSITION_GROUP_ENCODING).fillna(0).astype(int)
+        )
         if "IS_HOME" not in df.columns and "MATCHUP" in df.columns:
             df["IS_HOME"] = df["MATCHUP"].astype(str).str.contains("vs.", na=False).astype(int)
         if "height" in df.columns:
