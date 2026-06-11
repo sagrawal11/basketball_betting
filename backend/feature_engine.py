@@ -569,11 +569,14 @@ class FeatureEngine:
             "HA_HOME_", "HA_AWAY_", "ARCH_PROB_", "OPP_PRIOR_AVG_"
         ]
         
-        # Exact Managed Stat Names
+        # Exact Managed Stat Names.
+        # NOTE: raw same-game TS_PCT / USG_PCT are intentionally absent here —
+        # they are leaky (computed from the current game) and are dropped by the
+        # explicit exclusion below. Only their rolling (_L*) versions are kept.
         managed_exact = [
-            "IS_HOME", "height_inches", "TEAM_PACE", "TEAM_OFF_RATING", 
+            "IS_HOME", "height_inches", "TEAM_PACE", "TEAM_OFF_RATING",
             "TEAM_DEF_RATING", "TEAM_NET_RATING", "REST_FACTOR",
-            "TS_PCT", "USG_PCT", "DAYS_REST", "IS_B2B", "GAMES_LAST_7", 
+            "DAYS_REST", "IS_B2B", "GAMES_LAST_7",
             "MIN_CV_L10", "IS_PLAYOFF_GAME", "OPPONENT_STRENGTH"
         ]
         
