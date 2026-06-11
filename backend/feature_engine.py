@@ -623,10 +623,10 @@ class FeatureEngine:
         prior_cols = {f"OPP_PRIOR_AVG_{t}": self._expanding_opponent_means(df, t) for t in TARGET_STATS}
         df = pd.concat([df, pd.DataFrame(prior_cols)], axis=1)
         if self.archetype_engine is not None:
-            try:
-                df = self.archetype_engine.transform_frame(df)
-            except Exception as e:
-                logger.warning("Archetype transform skipped: %s", e)
+            # transform_frame guarantees a fixed ARCH_PROB_* schema (prior-filled
+            # on failure); no longer swallowed, so a genuine bug fails loudly
+            # instead of silently dropping the archetype columns.
+            df = self.archetype_engine.transform_frame(df)
         df["PLAYER_NAME"] = player_name
         df = self._clean_output_columns(df)
         if save_parquet:
@@ -759,12 +759,12 @@ def save_feature_columns(columns: List[str]) -> None:
 
 
 def default_engine() -> FeatureEngine:
+    # If an archetype model is present it MUST load — a corrupt/unreadable model
+    # silently becoming None would drop ARCH_PROB_* columns and cause train-serve
+    # skew. Absence of the file is allowed (pre-archetype bootstrap phase).
     arch = None
     if ARCHETYPE_PIPELINE_PATH.exists():
-        try:
-            arch = ArchetypeEngine.load(ARCHETYPE_PIPELINE_PATH)
-        except Exception:
-            pass
+        arch = ArchetypeEngine.load(ARCHETYPE_PIPELINE_PATH)
     return FeatureEngine(archetype_engine=arch)
 
 

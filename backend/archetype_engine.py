@@ -74,6 +74,17 @@ class ArchetypeEngine:
         )
         return self
 
+    @property
+    def n_archetypes(self) -> int:
+        """Number of ARCH_PROB_* columns this engine produces (GMM components)."""
+        return int(self.gmm.n_components) if self.gmm is not None else 0
+
+    @property
+    def prior_(self) -> Optional[np.ndarray]:
+        """GMM mixture weights — the marginal archetype distribution used as the
+        deterministic fill when per-row probabilities can't be computed."""
+        return self.gmm.weights_ if self.gmm is not None else None
+
     def _transform(self, X: np.ndarray) -> np.ndarray:
         assert self.scaler is not None and self.pca is not None and self.gmm is not None
         Xs = self.scaler.transform(X)
@@ -87,15 +98,34 @@ class ArchetypeEngine:
         return self.gmm.predict_proba(Z)
 
     def transform_frame(self, df: pd.DataFrame) -> pd.DataFrame:
-        feat = df.copy()
-        for c in TARGET_FEATURES:
-            if c not in feat.columns:
-                feat[c] = 0.0
-        feat = feat[TARGET_FEATURES].fillna(0.0)
-        
-        proba = self.predict_proba(feat)
+        """Attach a FIXED ARCH_PROB_0..N-1 schema (+ ARCH_ARGMAX).
+
+        The column set is deterministic for a fitted/loaded engine. If per-row
+        probabilities can't be computed for any reason, every row is filled with
+        the GMM training prior (mixture weights) instead of dropping the columns
+        — guaranteeing identical features at training and inference time.
+        """
         out = df.copy()
-        for j in range(proba.shape[1]):
+        n = self.n_archetypes
+        if n == 0:
+            raise RuntimeError("ArchetypeEngine is not fitted/loaded; cannot transform")
+
+        proba = None
+        try:
+            feat = df.copy()
+            for c in TARGET_FEATURES:
+                if c not in feat.columns:
+                    feat[c] = 0.0
+            feat = feat[TARGET_FEATURES].fillna(0.0)
+            proba = self.predict_proba(feat)
+        except Exception as e:
+            logger.warning("Archetype predict failed; filling training prior: %s", e)
+            proba = None
+
+        if proba is None or getattr(proba, "shape", (0,))[0] != len(out):
+            proba = np.tile(self.prior_, (len(out), 1))
+
+        for j in range(n):
             out[f"ARCH_PROB_{j}"] = proba[:, j]
         out["ARCH_ARGMAX"] = np.argmax(proba, axis=1)
         return out
