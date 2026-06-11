@@ -100,6 +100,51 @@ def _load_kaggle_prior_game_features(parquet_path: Path) -> Optional[pd.DataFram
     return out
 
 
+# Game-level rating columns (Kaggle) -> output rating names. Combined with an
+# as-of (prior-only) merge these replace the leaky full-season aggregates.
+_TEAM_RATING_SOURCES = {
+    "pace": "PACE",
+    "off_rtg": "OFF_RATING",
+    "def_rtg": "DEF_RATING",
+    "net_rtg": "NET_RATING",
+}
+
+
+def _load_team_ratings_timeline(parquet_path: Path) -> Optional[pd.DataFrame]:
+    """Per (team, game_date) season-to-date team ratings.
+
+    Each value is the cumulative mean THROUGH that game, computed within
+    (team, season). Paired with ``merge_asof(direction="backward",
+    allow_exact_matches=False)`` this yields a rating built only from games that
+    happened strictly before the row's game — no same-game or future leakage,
+    unlike the old full-season aggregate keyed on (team, SEASON).
+    """
+    path = Path(parquet_path)
+    if not path.exists():
+        logger.warning("Kaggle team games parquet missing at %s — team ratings off", path)
+        return None
+    try:
+        kg = pd.read_parquet(path)
+    except Exception:
+        return None
+    if "team" not in kg.columns or "game_date" not in kg.columns:
+        return None
+    present_src = [c for c in _TEAM_RATING_SOURCES if c in kg.columns]
+    if not present_src:
+        return None
+    kg = kg.copy()
+    kg["game_date"] = pd.to_datetime(kg["game_date"]).dt.normalize()
+    group_keys = ["team", "season"] if "season" in kg.columns else ["team"]
+    kg = kg.sort_values(group_keys + ["game_date"])
+    out = kg[["team", "game_date"]].copy()
+    if "season" in kg.columns:
+        out["season"] = kg["season"]
+    grp = kg.groupby(group_keys, sort=False)
+    for src in present_src:
+        out[_TEAM_RATING_SOURCES[src]] = grp[src].transform(lambda s: s.expanding().mean())
+    return out
+
+
 def _load_dvp() -> Optional[pd.DataFrame]:
     if not DVP_PARQUET.exists():
         return None
@@ -141,6 +186,9 @@ class FeatureEngine:
         self.player_data_dir = Path(player_data_dir or PLAYER_DATA_DIR)
         self.team_stats_path = Path(team_stats_path or TEAM_STATS_CSV)
         self.team_stats = _load_team_stats(self.team_stats_path)
+        # Prior-games-only team ratings (replaces the leaky full-season aggregate
+        # that team_stats provided to _merge_team_context).
+        self.team_ratings = _load_team_ratings_timeline(KAGGLE_TEAM_GAMES_PARQUET)
         self.kaggle_prior_games = _load_kaggle_prior_game_features(KAGGLE_TEAM_GAMES_PARQUET)
         self._kaggle_team_schedule_meta: Optional[pd.DataFrame] = None
         self.dvp = _load_dvp()
@@ -252,41 +300,71 @@ class FeatureEngine:
         return np.nan
 
     def _merge_team_context(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.team_stats is None:
-            df["TEAM_PACE"] = np.nan
-            df["TEAM_OFF_RATING"] = np.nan
-            df["TEAM_DEF_RATING"] = np.nan
-            df["OPP_PACE"] = np.nan
-            df["OPP_OFF_RATING"] = np.nan
-            df["OPP_DEF_RATING"] = np.nan
+        """Attach season-to-date team & opponent ratings using ONLY games that
+        happened before each row's game (no same-game or future leakage).
+
+        Uses the prior-only ``team_ratings`` timeline + merge_asof(backward,
+        exclusive), replacing the old full-season aggregate keyed on (team,
+        SEASON) which leaked end-of-season data into every mid-season row.
+        """
+        rating_out = ["PACE", "OFF_RATING", "DEF_RATING", "NET_RATING"]
+        timeline = getattr(self, "team_ratings", None)
+        if timeline is None or len(timeline) == 0:
+            for c in rating_out:
+                df[f"TEAM_{c}"] = np.nan
+                df[f"OPP_{c}"] = np.nan
             return df
-        ts = self.team_stats
-        need = ["TEAM_ABBREVIATION", "SEASON", "PACE", "OFF_RATING", "DEF_RATING", "NET_RATING"]
-        cols = [c for c in need if c in ts.columns]
-        left = df.merge(
-            ts[cols].rename(
-                columns={
-                    "TEAM_ABBREVIATION": "PLAYER_TEAM",
-                    "PACE": "TEAM_PACE",
-                    "OFF_RATING": "TEAM_OFF_RATING",
-                    "DEF_RATING": "TEAM_DEF_RATING",
-                    "NET_RATING": "TEAM_NET_RATING",
-                }
-            ),
-            on=["PLAYER_TEAM", "SEASON"],
-            how="left",
+
+        present = [c for c in rating_out if c in timeline.columns]
+        x = df.copy()
+        x["_gd"] = pd.to_datetime(x["GAME_DATE"]).dt.normalize()
+        x["_idx"] = np.arange(len(x), dtype=np.int64)
+
+        # Player team: most recent STRICTLY-prior team game.
+        tl_team = timeline.rename(
+            columns={"team": "PLAYER_TEAM", "game_date": "_gdt",
+                     **{c: f"TEAM_{c}" for c in present}}
         )
-        opp = ts[cols].rename(
-            columns={
-                "TEAM_ABBREVIATION": "OPPONENT_TEAM",
-                "PACE": "OPP_PACE",
-                "OFF_RATING": "OPP_OFF_RATING",
-                "DEF_RATING": "OPP_DEF_RATING",
-                "NET_RATING": "OPP_NET_RATING",
-            }
+        team_cols = [f"TEAM_{c}" for c in present]
+        m = pd.merge_asof(
+            x.sort_values("_gd"),
+            tl_team[["PLAYER_TEAM", "_gdt"] + team_cols].sort_values("_gdt"),
+            left_on="_gd",
+            right_on="_gdt",
+            by="PLAYER_TEAM",
+            direction="backward",
+            allow_exact_matches=False,
         )
-        left = left.merge(opp, on=["OPPONENT_TEAM", "SEASON"], how="left")
-        return left
+        m = m.drop(columns=["_gdt"], errors="ignore")
+
+        # Opponent team: same prior-only as-of logic.
+        tl_opp = timeline.rename(
+            columns={"team": "OPPONENT_TEAM", "game_date": "_gdo",
+                     **{c: f"OPP_{c}" for c in present}}
+        )
+        opp_cols = [f"OPP_{c}" for c in present]
+        m = pd.merge_asof(
+            m.sort_values("_gd"),
+            tl_opp[["OPPONENT_TEAM", "_gdo"] + opp_cols].sort_values("_gdo"),
+            left_on="_gd",
+            right_on="_gdo",
+            by="OPPONENT_TEAM",
+            direction="backward",
+            allow_exact_matches=False,
+        )
+        m = (
+            m.sort_values("_idx")
+            .drop(columns=["_idx", "_gd", "_gdo"], errors="ignore")
+            .reset_index(drop=True)
+        )
+
+        # Guarantee a stable column schema even if a source rating was absent.
+        for c in rating_out:
+            if f"TEAM_{c}" not in m.columns:
+                m[f"TEAM_{c}"] = np.nan
+            if f"OPP_{c}" not in m.columns:
+                m[f"OPP_{c}"] = np.nan
+        return m
 
     def _merge_kaggle_prior_game_context(self, df: pd.DataFrame) -> pd.DataFrame:
         """Attach prior-game team box stats from Kaggle (shifted); opponent side with KG_OPP_PREV_*."""
