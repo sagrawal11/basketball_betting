@@ -31,3 +31,6 @@ seaborn>=0.12.0
 redis>=5.0.0
 boto3>=1.34.0
 boto3
+
+# Dev / Testing
+pytest>=7.4.0

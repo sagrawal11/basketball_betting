@@ -68,12 +68,15 @@ logs/
 backend/config/api_keys.json
 api_keys.json
 
-# Test files
+# Test files (ad-hoc scratch tests anywhere)
 test_*.py
 *_test.py
 .pytest_cache/
 .coverage
 htmlcov/
+# ...but DO track the real backend test suite
+!backend/tests/test_*.py
+!backend/tests/*_test.py
 
 # Temporary files
 *.tmp

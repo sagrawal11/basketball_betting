@@ -21,12 +21,16 @@ if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
 from config.paths import GLOBAL_MODEL_DIR, PLAYER_DATA_DIR
-from feature_engine import FeatureEngine, TARGET_STATS, save_feature_columns, default_engine
+from feature_engine import (
+    FeatureEngine,
+    TARGET_STATS,
+    save_feature_columns,
+    default_engine,
+    split_features_targets,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-ID_LIKE = {"Player_ID", "Game_ID", "SEASON_ID", "VIDEO_AVAILABLE", "ARCH_ARGMAX"}
 
 def _load_or_build_features(engine: FeatureEngine, player_data_dir: Path, max_players: Optional[int]) -> pd.DataFrame:
     frames: List[pd.DataFrame] = []
@@ -60,30 +64,9 @@ def _load_or_build_features(engine: FeatureEngine, player_data_dir: Path, max_pl
 
 
 def _feature_target_split(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str], List[str], pd.Series]:
-    from feature_engine import default_engine
-    engine = default_engine()
-    
-    df = df.copy()
-    if "GAME_DATE" in df.columns:
-        df["GAME_DATE"] = pd.to_datetime(df["GAME_DATE"])
-        df = df.sort_values("GAME_DATE").reset_index(drop=True)
-    
-    seasons = df["SEASON"] if "SEASON" in df.columns else pd.Series(["Unknown"] * len(df))
-    
-    # Use FeatureEngine to whitelist strictly managed columns
-    df = engine._clean_output_columns(df)
-    
-    num = df.select_dtypes(include=[np.number])
-    y_cols = [c for c in TARGET_STATS if c in num.columns]
-    drop_y = [c for c in num.columns if c in TARGET_STATS]
-    X_num = num.drop(columns=[c for c in drop_y if c in num.columns], errors="ignore")
-    
-    for c in list(X_num.columns):
-        if c in ID_LIKE:
-            X_num = X_num.drop(columns=[c])
-            
-    X_cols = list(X_num.columns)
-    return X_num, X_cols, y_cols, seasons
+    """Delegates to the single source of truth so train_global and train_hybrid
+    always select an identical feature set (no train-serve skew)."""
+    return split_features_targets(df)
 
 
 def train_global_model(

@@ -28,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 TARGET_STATS = ["PTS", "OREB", "DREB", "AST", "FTM", "FG3M", "FGM", "STL", "BLK", "TOV"]
 ROLL_WINDOWS = [3, 5, 10, 20]
+
+# Identifier-like numeric columns that must never be used as model features.
+ID_LIKE = {"Player_ID", "Game_ID", "SEASON_ID", "VIDEO_AVAILABLE", "ARCH_ARGMAX"}
 # Home / away–only rolling (separate from global rolls); keep small to limit width
 HA_ROLL_WINDOWS = (5, 10)
 HA_ROLL_COLS = ("PTS", "MIN", "FGM")
@@ -645,6 +648,21 @@ def load_feature_columns() -> Optional[List[str]]:
 
 
 def save_feature_columns(columns: List[str]) -> None:
+    # Guard against destructive overwrites: if a previous trainer already wrote a
+    # different feature set, surface it loudly. With a unified selection
+    # (split_features_targets) every trainer writes the same columns, so a
+    # mismatch here means the skew bug has reappeared.
+    existing = load_feature_columns()
+    if existing is not None and existing != columns:
+        added = [c for c in columns if c not in existing]
+        removed = [c for c in existing if c not in columns]
+        logger.warning(
+            "Overwriting feature_columns.json with a DIFFERENT feature set "
+            "(added=%s, removed=%s). All trainers should agree via "
+            "split_features_targets().",
+            added,
+            removed,
+        )
     ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
     with open(FEATURE_COLUMNS_PATH, "w", encoding="utf-8") as f:
         json.dump({"columns": columns}, f, indent=2)
@@ -658,3 +676,42 @@ def default_engine() -> FeatureEngine:
         except Exception:
             pass
     return FeatureEngine(archetype_engine=arch)
+
+
+def split_features_targets(
+    df: pd.DataFrame,
+    engine: Optional[FeatureEngine] = None,
+) -> Tuple[pd.DataFrame, List[str], List[str], pd.Series]:
+    """Single source of truth for feature/target column selection.
+
+    Every trainer (train_global.py, train_hybrid.py) MUST call this so that the
+    feature set written to feature_columns.json is identical no matter which
+    trainer ran last. Diverging selection here is the root cause of train-serve
+    skew.
+
+    Returns ``(X_numeric, feature_cols, target_cols, seasons)`` where:
+      * the frame is chronologically sorted by GAME_DATE (when present),
+      * columns are restricted to the managed whitelist via
+        ``FeatureEngine._clean_output_columns``,
+      * targets and identifier-like columns are removed from the feature matrix.
+    """
+    if engine is None:
+        engine = default_engine()
+
+    df = df.copy()
+    if "GAME_DATE" in df.columns:
+        df["GAME_DATE"] = pd.to_datetime(df["GAME_DATE"])
+        df = df.sort_values("GAME_DATE").reset_index(drop=True)
+
+    seasons = df["SEASON"] if "SEASON" in df.columns else pd.Series(["Unknown"] * len(df))
+
+    # Restrict to the strictly-managed feature whitelist (the same cleaning the
+    # FeatureEngine applies when it writes training parquets and inference rows).
+    df = engine._clean_output_columns(df)
+
+    num = df.select_dtypes(include=[np.number])
+    y_cols = [c for c in TARGET_STATS if c in num.columns]
+    drop_cols = [c for c in num.columns if c in TARGET_STATS or c in ID_LIKE]
+    X_num = num.drop(columns=drop_cols, errors="ignore")
+    X_cols = list(X_num.columns)
+    return X_num, X_cols, y_cols, seasons
