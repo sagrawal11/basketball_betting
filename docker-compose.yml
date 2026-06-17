@@ -1,0 +1,71 @@
+name: nba-betting
+
+# Local dev stack (Hybrid): Compose owns the stateful backing services + the Flask
+# backend (pinned to Python 3.10). Vite runs natively on the host (see `make frontend`).
+
+services:
+  # ── Cache (local stand-in for Upstash; app.py reads REDIS_URL) ──
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── Object store (local S3-compatible stand-in for Cloudflare R2) ──
+  minio:
+    image: minio/minio
+    command: ["server", "/data", "--console-address", ":9001"]
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # web console
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-nba-local}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-locally}
+    volumes:
+      - minio-data:/data
+
+  # ── One-shot: wait for MinIO, then create the bucket (idempotent) ──
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-nba-local}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-locally}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-nba-data}
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\"; do
+        echo 'waiting for minio...'; sleep 2;
+      done;
+      mc mb --ignore-existing local/$$R2_BUCKET_NAME;
+      echo 'minio bucket ready: '$$R2_BUCKET_NAME;
+      "
+
+  # ── Flask API (Python 3.10 image; code + data bind-mounted) ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app/backend
+
+volumes:
+  redis-data:
+  minio-data:

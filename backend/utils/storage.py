@@ -17,10 +17,28 @@ def get_r2_client():
     account_id = os.environ.get("R2_ACCOUNT_ID")
     access_key = os.environ.get("R2_ACCESS_KEY_ID")
     secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
-    
-    if not all([account_id, access_key, secret_key]):
+    # When set, point boto3 at a local S3-compatible store (MinIO) instead of R2.
+    # This is a real S3 endpoint, not a mock; production R2 behavior is unchanged
+    # whenever R2_ENDPOINT_URL is absent.
+    endpoint = os.environ.get("R2_ENDPOINT_URL")
+
+    if not all([access_key, secret_key]):
         return None
-        
+
+    if endpoint:
+        # Local MinIO stand-in: needs explicit region + path-style addressing.
+        return boto3.client(
+            's3',
+            endpoint_url=endpoint,
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name=os.environ.get("AWS_DEFAULT_REGION", "us-east-1"),
+            config=Config(signature_version='s3v4', s3={'addressing_style': 'path'}),
+        )
+
+    # Production Cloudflare R2 (behavior identical to before this seam was added).
+    if not account_id:
+        return None
     return boto3.client(
         's3',
         endpoint_url=f"https://{account_id}.r2.cloudflarestorage.com",
