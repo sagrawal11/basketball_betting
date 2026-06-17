@@ -58,6 +58,16 @@ def _upload_file(s3, local_path: Path, bucket: str, key: str) -> bool:
         return False
 
 
+def _list_remote_sizes(s3, bucket: str) -> dict:
+    """Map remote key -> size (bytes) for every object in the bucket, for delta uploads."""
+    sizes: dict = {}
+    paginator = s3.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket):
+        for obj in page.get("Contents", []):
+            sizes[obj["Key"]] = obj["Size"]
+    return sizes
+
+
 def _get_active_player_slugs(player_data_dir: Path, max_days: int = 365) -> list[str]:
     """Return slugs of players who have played within max_days."""
     cutoff = datetime.now() - timedelta(days=max_days)
@@ -120,7 +130,26 @@ def upload_full_training_bundle(bucket: str) -> None:
                 
     if FEATURE_COLUMNS_PATH.exists():
         upload_tasks.append((FEATURE_COLUMNS_PATH, f"artifacts/{FEATURE_COLUMNS_PATH.name}"))
-        
+
+    # Delta: skip files already present in R2 at the same size. The training data is
+    # append-only (new game rows grow files) and models are regenerated, so a size match
+    # reliably means "unchanged". This avoids re-uploading ~48k identical files every run.
+    try:
+        remote_sizes = _list_remote_sizes(s3, bucket)
+        deltas, skipped = [], 0
+        for path, key in upload_tasks:
+            try:
+                if remote_sizes.get(key) == path.stat().st_size:
+                    skipped += 1
+                    continue
+            except OSError:
+                pass
+            deltas.append((path, key))
+        print(f"Delta: {len(deltas)} changed/new, {skipped} unchanged (skipped) of {len(upload_tasks)}.")
+        upload_tasks = deltas
+    except ClientError as e:
+        print(f"Could not list remote for delta ({e}); uploading all files.")
+
     print(f"Uploading {len(upload_tasks)} files using multi-threading...")
     
     def _do_upload(task):

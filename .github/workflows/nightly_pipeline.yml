@@ -17,7 +17,7 @@ on:
 jobs:
   daily-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 45  # Safety: kill if something hangs
+    timeout-minutes: 75  # full retrain + ~2.8GB R2 download (delta upload keeps the tail short)
     
     steps:
       - name: Checkout code
