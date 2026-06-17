@@ -1,18 +1,20 @@
-name: Nightly Data Refresh & Cache
+name: Weekly Full Retrain
 
-# Daily, LIGHT path (no retrain): refresh data sources, warm the Redis prediction
-# cache, and delta-upload changed files to R2. Models are retrained separately by
-# weekly_retrain.yml. Fits the free Actions tier (~30-40 min/run incl. R2 download).
+# Weekly, HEAVY path: rebuild features for active players and retrain the hybrid
+# models, then delta-upload to R2. Runs Sundays after the daily refresh. The long
+# timeout reflects full per-player residual + global LightGBM training on a free
+# 2-core runner; weekly cadence keeps it within the free Actions tier. Daily
+# predictions (warmed by nightly_pipeline.yml) use the most recent weekly models.
 
 on:
   schedule:
-    - cron: '0 8 * * *'   # 08:00 UTC daily, after games finish
+    - cron: '0 9 * * 0'   # Sundays 09:00 UTC, after the 08:00 daily refresh
   workflow_dispatch:
 
 jobs:
-  refresh:
+  retrain:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,7 +49,7 @@ jobs:
               print('R2_BUCKET_NAME not set')
           "
 
-      - name: Refresh data + warm cache (no retrain)
+      - name: Full retrain (features + hybrid models)
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
@@ -58,6 +60,4 @@ jobs:
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
         run: |
           cd backend
-          # Kaggle/sqlite refresh -> B-Ref scrape -> team stats -> DvP -> injuries
-          # -> cache baselines -> delta R2 upload. NO feature rebuild / retrain.
-          python pipeline/nightly.py
+          python pipeline/nightly.py --rebuild-features --retrain-global
